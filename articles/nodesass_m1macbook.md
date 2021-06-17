@@ -8,6 +8,8 @@ published: true
 
 **win 環境で開発していた Redux Toolkit のプロジェクトを M1 にクローンして`yarn start`したところ、node-sassはまだM1に対応していよと怒られました。**
 
+自分と同じように困っている方に役立てば幸いです。
+
 調べていると、参考になったページがあったので載せておきます。
 https://shimi-shin.com/programming/web/m1-mac-node-sass/
 
