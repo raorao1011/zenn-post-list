@@ -24,7 +24,7 @@ https://master.dmaovt179fpoq.amplifyapp.com/
 - React Hook Form
 - Amplify
 - Figma
-- Slack Webhook
+- Slack Webhook(フォームの送信内容をSlackへ通知)
   ![portfolio](https://user-images.githubusercontent.com/68511759/122046136-7d805a00-ce19-11eb-8244-c70ab49c0d51.png)
 
 ## タスク管理
