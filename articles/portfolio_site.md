@@ -19,7 +19,7 @@ published: true
 
 ## アプリケーションの概要
 
-https://master.dmaovt179fpoq.amplifyapp.com/
+https://www.yuki-tagawa.com/
 
 **関連技術、機能**
 
@@ -27,7 +27,7 @@ https://master.dmaovt179fpoq.amplifyapp.com/
 - TypeScript
 - Chakra UI
 - React Hook Form
-- Amplify
+- Vercel
 - Figma
 - Slack Webhook(フォームの送信内容を Slack へ通知)
   ![portfolio](https://user-images.githubusercontent.com/68511759/122046136-7d805a00-ce19-11eb-8244-c70ab49c0d51.png)
