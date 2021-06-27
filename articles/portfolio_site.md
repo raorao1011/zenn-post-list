@@ -6,6 +6,11 @@ topics: ["react", "chakraui", "typescript"] # タグ。["markdown", "rust", "aws
 published: true
 ---
 
+:::message
+**2021/6/27 追記**
+デプロイ先を Vercel に変更し、Google Domain で独自ドメインを取得しました。
+:::
+
 ## はじめに
 
 私事ですが、フロントエンドの学習を始めはや数ヶ月が過ぎ、最近では React、TypeScript の学習に突入しています。
