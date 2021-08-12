@@ -21,7 +21,7 @@ yarn remove node-sass
 
 sassとsass-loaderをインストールしましょう
 ```js
-yarn install sass sass-loader
+yarn add sass sass-loader
 ```
 
 これでM1で開発ができます！
