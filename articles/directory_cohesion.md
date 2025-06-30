@@ -42,6 +42,8 @@ published: false
 
 Webフロントエンドにおいては、論理的凝集と機能的凝集について考える機会が多いのでこの２つをピックアップします。
 
+## ディレクトリ設計における機能的凝集度
+
 ### よくある論理的凝集への変化パターン
 
 機能追加と共に、論理的凝集に陥ってしまう典型的なパターンを見てみましょう。ECサイトの機能を例にします。
@@ -237,10 +239,295 @@ src/
 
 このように機能別に分割することで、各機能の責任が明確になり、保守性が大幅に向上します。
 
-
-## ディレクトリ設計における機能的凝集度
-
 ## コンポーネント設計における機能的凝集度
+
+### よくある論理的凝集コンポーネントへの変化パターン
+
+Reactコンポーネントでも同様に、機能追加と共に論理的凝集に陥ってしまう典型的なパターンを見てみましょう。
+
+#### フェーズ1: 最初は機能的凝集（良い状態）
+
+プロジェクト開始時は、各コンポーネントが単一の責任を持ち、理想的な状態です。
+
+```typescript
+// UserProfile.tsx - ユーザープロフィール表示のみ
+const UserProfile = ({ user }: { user: User }) => {
+  return (
+    <div className="user-profile">
+      <img src={user.avatar} alt={user.name} />
+      <h2>{user.name}</h2>
+      <p>{user.email}</p>
+    </div>
+  );
+};
+```
+
+#### フェーズ2: 商品機能追加 - まだ機能的凝集
+
+新しいコンポーネントを追加しても、まだ各コンポーネントの責任は明確です。
+
+```typescript
+// ProductCard.tsx - 商品表示のみ
+const ProductCard = ({ product }: { product: Product }) => {
+  return (
+    <div className="product-card">
+      <img src={product.image} alt={product.name} />
+      <h3>{product.name}</h3>
+      <p>¥{product.price}</p>
+    </div>
+  );
+};
+```
+
+#### フェーズ3: カート機能追加 - 論理的凝集の始まり
+
+カート機能追加時、「フォーム関連だから」という理由で`CommonForm`コンポーネントを作り始めます。この時点では問題ないように見えますが、論理的凝集の種が蒔かれています。
+
+```typescript
+// CommonForm.tsx - 最初はログインフォームのみ
+const CommonForm = ({ type, data, onSubmit }: CommonFormProps) => {
+  if (type === 'login') {
+    return (
+      <form onSubmit={onSubmit}>
+        <input type="email" placeholder="メールアドレス" />
+        <input type="password" placeholder="パスワード" />
+        <button type="submit">ログイン</button>
+      </form>
+    );
+  }
+  return null;
+};
+```
+
+#### フェーズ4: 注文機能追加 - 論理的凝集が深刻化
+
+注文機能の追加で「フォームだから」という理由で無関係なフォーム処理が`CommonForm`に混入し始めます。コンポーネントの責任が曖昧になってきます。
+
+```typescript
+// CommonForm.tsx - 関係ない機能が追加され始める
+const CommonForm = ({ type, data, onSubmit }: CommonFormProps) => {
+  if (type === 'login') {
+    return <LoginForm data={data} onSubmit={onSubmit} />;
+  }
+  // 注文機能追加時に「フォームだから」という理由で追加
+  if (type === 'order') {
+    return <OrderForm data={data} onSubmit={onSubmit} />;
+  }
+  // 商品登録機能追加時に「フォームだから」という理由で追加
+  if (type === 'product') {
+    return <ProductForm data={data} onSubmit={onSubmit} />;
+  }
+  return null;
+};
+```
+
+#### フェーズ5: 決済・レビュー機能追加 - 完全に論理的凝集
+
+さらなる機能追加により、「フォーム」という表面的な共通点だけで無関係な機能が一つのコンポーネントに集まった状態です。保守性・可読性が大幅に低下しています。
+
+```typescript
+// CommonForm.tsx - 「フォーム」という名前だけで無関係な機能が集まった状態
+const CommonForm = ({ type, data, onSubmit }: CommonFormProps) => {
+  if (type === 'login') return <LoginForm data={data} onSubmit={onSubmit} />;
+  if (type === 'order') return <OrderForm data={data} onSubmit={onSubmit} />;
+  if (type === 'product') return <ProductForm data={data} onSubmit={onSubmit} />;
+  if (type === 'payment') return <PaymentForm data={data} onSubmit={onSubmit} />;
+  if (type === 'review') return <ReviewForm data={data} onSubmit={onSubmit} />;
+  if (type === 'profile') return <ProfileForm data={data} onSubmit={onSubmit} />;
+  return null;
+};
+
+// CommonModal.tsx - 新たな論理的凝集コンポーネント
+const CommonModal = ({ type, content, onClose }: CommonModalProps) => {
+  if (type === 'confirm') return <ConfirmModal content={content} onClose={onClose} />;
+  if (type === 'info') return <InfoModal content={content} onClose={onClose} />;
+  if (type === 'error') return <ErrorModal content={content} onClose={onClose} />;
+  if (type === 'loading') return <LoadingModal content={content} onClose={onClose} />;
+  return null;
+};
+```
+
+### 論理的凝集コンポーネントの問題点
+
+論理的凝集になったコンポーネントは表面的な共通点はあるものの、実際には異なるビジネス機能に属しており、変更理由や変更タイミングが異なるため様々な問題を引き起こします。
+
+**CommonForm.tsx の問題：**
+- ログインフォーム（認証機能）
+- 注文フォーム（注文機能）
+- 商品登録フォーム（商品管理機能）
+- 決済フォーム（決済機能）
+- レビューフォーム（レビュー機能）
+
+これらは「フォーム」という表面的な共通点はあるものの、実際には異なるビジネス機能に属しており、変更理由も変更タイミングも異なります。
+
+**実際に起こる問題：**
+1. **影響範囲の拡大**: ログインフォームのスタイルを変更したいだけなのに、決済・レビューフォームのテストも必要になる
+2. **並行開発の阻害**: 複数チームが同じコンポーネントを同時に変更してコンフリクトが発生
+3. **理解の困難**: 新しいメンバーが「なぜこれらのフォームが一つのコンポーネントにあるのか」理解できない
+4. **テストの複雑化**: 一つのコンポーネントで多数の機能をテストする必要がある
+
+### 機能的凝集コンポーネントへの改善例
+
+論理的凝集を機能的凝集に改善するには、単一責任の原則に従い、機能ごとに独立したコンポーネントを作成することが効果的です。
+
+```typescript
+// features/auth/components/LoginForm.tsx - 認証機能のみ
+const LoginForm = ({ onSubmit }: { onSubmit: (data: LoginData) => void }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit({ email, password });
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="login-form">
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="メールアドレス"
+      />
+      <input
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="パスワード"
+      />
+      <button type="submit">ログイン</button>
+    </form>
+  );
+};
+
+// features/order/components/OrderForm.tsx - 注文機能のみ
+const OrderForm = ({ onSubmit }: { onSubmit: (data: OrderData) => void }) => {
+  const [shippingAddress, setShippingAddress] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit({ shippingAddress, paymentMethod });
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="order-form">
+      <textarea 
+        value={shippingAddress}
+        onChange={(e) => setShippingAddress(e.target.value)}
+        placeholder="配送先住所" 
+      />
+      <select 
+        value={paymentMethod}
+        onChange={(e) => setPaymentMethod(e.target.value)}
+      >
+        <option value="">支払い方法を選択</option>
+        <option value="credit">クレジットカード</option>
+        <option value="bank">銀行振込</option>
+      </select>
+      <button type="submit">注文確定</button>
+    </form>
+  );
+};
+
+// features/product/components/ProductForm.tsx - 商品管理機能のみ
+const ProductForm = ({ onSubmit }: { onSubmit: (data: ProductData) => void }) => {
+  const [name, setName] = useState('');
+  const [price, setPrice] = useState(0);
+  const [description, setDescription] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit({ name, price, description });
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="product-form">
+      <input 
+        type="text" 
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="商品名" 
+      />
+      <input 
+        type="number" 
+        value={price}
+        onChange={(e) => setPrice(Number(e.target.value))}
+        placeholder="価格" 
+      />
+      <textarea 
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        placeholder="商品説明" 
+      />
+      <button type="submit">商品登録</button>
+    </form>
+  );
+};
+```
+
+### カスタムフックによる状態管理の分離
+
+さらに機能的凝集度を高めるため、カスタムフックを使用してロジックとプレゼンテーションを分離します。
+
+```typescript
+// features/auth/hooks/useLogin.ts - 認証ロジックのみ
+const useLogin = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const login = async (data: LoginData) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await authAPI.login(data);
+      // ログイン成功処理
+    } catch (err) {
+      setError('ログインに失敗しました');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { login, loading, error };
+};
+
+// features/auth/components/LoginForm.tsx - プレゼンテーションのみ
+const LoginForm = () => {
+  const { login, loading, error } = useLogin();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    login({ email, password });
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="login-form">
+      {error && <div className="error">{error}</div>}
+      <input 
+        type="email" 
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="メールアドレス" 
+      />
+      <input 
+        type="password" 
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="パスワード" 
+      />
+      <button type="submit" disabled={loading}>
+        {loading ? 'ログイン中...' : 'ログイン'}
+      </button>
+    </form>
+  );
+};
+```
+
+このように機能別にコンポーネントを分割し、カスタムフックでロジックを分離することで、各コンポーネントの責任が明確になり、保守性・テスタビリティ・再利用性が大幅に向上します。
+
 
 ## まとめ
 
