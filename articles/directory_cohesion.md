@@ -327,6 +327,8 @@ const CommonForm = ({ type, data, onSubmit }: CommonFormProps) => {
 
 さらなる機能追加により、「フォーム」という表面的な共通点だけで無関係な機能が一つのコンポーネントに集まった状態です。保守性・可読性が大幅に低下しています。
 
+:::details コードが長文になっているのでアコーディオン内に格納しています
+
 ```typescript
 // CommonForm.tsx - 「フォーム」という名前だけで無関係な機能が集まった状態
 const CommonForm = ({ type, data, onSubmit }: CommonFormProps) => {
@@ -944,6 +946,8 @@ const UniversalFormModal = ({
   );
 };
 ```
+
+:::
 
 **この巨大コンポーネントの深刻な問題点：**
 
