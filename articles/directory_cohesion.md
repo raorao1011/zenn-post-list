@@ -653,209 +653,47 @@ const LoginForm = ({ onSubmit }: { onSubmit: (data: LoginData) => void }) => {
   return (
     <form onSubmit={handleSubmit} className="login-form">
       <h2>ログイン</h2>
-      <input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="メールアドレス"
-        required
-      />
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="パスワード"
-        required
-      />
+      <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
       <button type="submit">ログイン</button>
-      <div className="forgot-password">
-        <a href="/forgot-password">パスワードを忘れた方</a>
-      </div>
     </form>
   );
 };
 
 // features/order/components/OrderForm.tsx - 注文機能のみ
 const OrderForm = ({ onSubmit }: { onSubmit: (data: OrderData) => void }) => {
-  const [shippingAddress, setShippingAddress] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('');
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit({ shippingAddress, paymentMethod });
-  };
-
+  // ...状態管理とイベントハンドラー
   return (
     <form onSubmit={handleSubmit} className="order-form">
       <h2>注文情報</h2>
-      <textarea 
-        value={shippingAddress}
-        onChange={(e) => setShippingAddress(e.target.value)}
-        placeholder="配送先住所" 
-        required
-      />
-      <select 
-        value={paymentMethod}
-        onChange={(e) => setPaymentMethod(e.target.value)}
-        required
-      >
-        <option value="">支払い方法を選択</option>
+      <textarea placeholder="配送先住所" />
+      <select>
         <option value="credit">クレジットカード</option>
         <option value="bank">銀行振込</option>
-        <option value="cod">代金引換</option>
       </select>
       <button type="submit">注文確定</button>
     </form>
   );
 };
 
-// features/product/components/ProductForm.tsx - 商品管理機能のみ
-const ProductForm = ({ onSubmit }: { onSubmit: (data: ProductData) => void }) => {
-  const [name, setName] = useState('');
-  const [price, setPrice] = useState(0);
-  const [description, setDescription] = useState('');
-  const [category, setCategory] = useState('');
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit({ name, price, description, category });
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="product-form">
-      <h2>商品登録</h2>
-      <input 
-        type="text" 
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="商品名"
-        required
-      />
-      <input 
-        type="number" 
-        value={price}
-        onChange={(e) => setPrice(Number(e.target.value))}
-        placeholder="価格"
-        min="0"
-        required
-      />
-      <textarea 
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        placeholder="商品説明"
-        required
-      />
-      <select 
-        value={category}
-        onChange={(e) => setCategory(e.target.value)}
-        required
-      >
-        <option value="">カテゴリを選択</option>
-        <option value="electronics">電子機器</option>
-        <option value="clothing">衣類</option>
-        <option value="books">書籍</option>
-      </select>
-      <button type="submit">商品登録</button>
-    </form>
-  );
-};
-
 // features/payment/components/PaymentForm.tsx - 決済機能のみ
 const PaymentForm = ({ onSubmit }: { onSubmit: (data: PaymentData) => void }) => {
-  const [cardNumber, setCardNumber] = useState('');
-  const [expiry, setExpiry] = useState('');
-  const [cvv, setCvv] = useState('');
-  const [cardName, setCardName] = useState('');
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit({ cardNumber, expiry, cvv, cardName });
-  };
-
+  // ...状態管理とイベントハンドラー
   return (
     <form onSubmit={handleSubmit} className="payment-form">
       <h2>決済情報</h2>
-      <input 
-        type="text" 
-        value={cardNumber}
-        onChange={(e) => setCardNumber(e.target.value)}
-        placeholder="カード番号"
-        required
-      />
-      <div className="card-details">
-        <input 
-          type="text" 
-          value={expiry}
-          onChange={(e) => setExpiry(e.target.value)}
-          placeholder="MM/YY"
-          required
-        />
-        <input 
-          type="text" 
-          value={cvv}
-          onChange={(e) => setCvv(e.target.value)}
-          placeholder="CVV"
-          maxLength={3}
-          required
-        />
-      </div>
-      <input 
-        type="text" 
-        value={cardName}
-        onChange={(e) => setCardName(e.target.value)}
-        placeholder="カード名義"
-        required
-      />
+      <input type="text" placeholder="カード番号" />
+      <input type="text" placeholder="MM/YY" />
+      <input type="text" placeholder="CVV" />
       <button type="submit">決済実行</button>
     </form>
   );
 };
 
-// features/review/components/ReviewForm.tsx - レビュー機能のみ
-const ReviewForm = ({ onSubmit }: { onSubmit: (data: ReviewData) => void }) => {
-  const [rating, setRating] = useState(0);
-  const [text, setText] = useState('');
-  const [anonymous, setAnonymous] = useState(false);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit({ rating, text, anonymous });
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="review-form">
-      <h2>レビュー投稿</h2>
-      <div className="rating">
-        <label>評価:</label>
-        {[1, 2, 3, 4, 5].map(star => (
-          <button 
-            key={star}
-            type="button"
-            onClick={() => setRating(star)}
-            className={rating >= star ? 'active' : ''}
-          >
-            ★
-          </button>
-        ))}
-      </div>
-      <textarea 
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        placeholder="レビューを書く"
-        required
-      />
-      <label>
-        <input 
-          type="checkbox"
-          checked={anonymous}
-          onChange={(e) => setAnonymous(e.target.checked)}
-        />
-        匿名で投稿
-      </label>
-      <button type="submit">レビュー投稿</button>
-    </form>
-  );
-};
+// 他の機能も同様に、各々が単一責任を持つ独立したコンポーネント
+// - ProductForm（商品管理機能のみ）
+// - ReviewForm（レビュー機能のみ）
+// - ProfileForm（プロフィール編集機能のみ）
 ```
 
 ### カスタムフックによる状態管理の分離
@@ -878,17 +716,7 @@ export interface LoginData {
   password: string;
 }
 
-export interface AuthUser {
-  id: string;
-  email: string;
-  name: string;
-}
-
 // features/auth/hooks/useLogin.ts - 認証ロジックのみ
-import { useState } from 'react';
-import { LoginData } from '../types/auth.types';
-import { authAPI } from '../../../shared/api/authAPI';
-
 const useLogin = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -909,12 +737,7 @@ const useLogin = () => {
   return { login, loading, error };
 };
 
-export { useLogin };
-
 // features/auth/components/LoginForm.tsx - プレゼンテーションのみ
-import React, { useState } from 'react';
-import { useLogin } from '../hooks/useLogin';
-
 const LoginForm = () => {
   const { login, loading, error } = useLogin();
   const [email, setEmail] = useState('');
@@ -929,286 +752,24 @@ const LoginForm = () => {
     <form onSubmit={handleSubmit} className="login-form">
       <h2>ログイン</h2>
       {error && <div className="error">{error}</div>}
-      <input 
-        type="email" 
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="メールアドレス" 
-        required
-      />
-      <input 
-        type="password" 
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="パスワード" 
-        required
-      />
+      <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
       <button type="submit" disabled={loading}>
         {loading ? 'ログイン中...' : 'ログイン'}
       </button>
     </form>
   );
 };
-
-export { LoginForm };
 ```
 
-#### 注文機能の実装例
+#### 他の機能も同様のパターン
 
-```
-features/order/
-├── components/OrderForm.tsx
-├── hooks/useOrder.ts
-├── utils/orderUtils.ts
-└── types/order.types.ts
-```
+各機能は同様の構造を持ち、それぞれが独立して開発・テスト・デプロイできます：
 
-```typescript
-// features/order/types/order.types.ts - 注文関連の型定義
-export interface OrderData {
-  shippingAddress: string;
-  paymentMethod: string;
-  items: CartItem[];
-  subtotal: number;
-}
-
-// features/order/utils/orderUtils.ts - 注文関連のユーティリティ
-export const calculateTax = (subtotal: number): number => {
-  return subtotal * 0.1;
-};
-
-export const calculateShipping = (items: CartItem[]): number => {
-  const totalWeight = items.reduce((sum, item) => sum + item.weight, 0);
-  return totalWeight > 5 ? 800 : 500;
-};
-
-// features/order/hooks/useOrder.ts - 注文ロジックのみ
-import { useState } from 'react';
-import { OrderData } from '../types/order.types';
-import { calculateTax, calculateShipping } from '../utils/orderUtils';
-import { orderAPI } from '../../../shared/api/orderAPI';
-
-const useOrder = () => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const createOrder = async (data: OrderData) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const orderData = {
-        ...data,
-        tax: calculateTax(data.subtotal),
-        shipping: calculateShipping(data.items)
-      };
-      await orderAPI.create(orderData);
-      showSuccessMessage('注文が完了しました');
-      router.push('/orders');
-    } catch (err) {
-      setError('注文に失敗しました');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return { createOrder, loading, error };
-};
-
-export { useOrder };
-
-// features/order/components/OrderForm.tsx - プレゼンテーションのみ
-import React, { useState } from 'react';
-import { useOrder } from '../hooks/useOrder';
-
-const OrderForm = () => {
-  const { createOrder, loading, error } = useOrder();
-  const [shippingAddress, setShippingAddress] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('');
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    createOrder({
-      shippingAddress,
-      paymentMethod,
-      items: [], // 実際にはカートから取得
-      subtotal: 0 // 実際にはカートから計算
-    });
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="order-form">
-      <h2>注文情報</h2>
-      {error && <div className="error">{error}</div>}
-      <textarea 
-        value={shippingAddress}
-        onChange={(e) => setShippingAddress(e.target.value)}
-        placeholder="配送先住所" 
-        required
-      />
-      <select 
-        value={paymentMethod}
-        onChange={(e) => setPaymentMethod(e.target.value)}
-        required
-      >
-        <option value="">支払い方法を選択</option>
-        <option value="credit">クレジットカード</option>
-        <option value="bank">銀行振込</option>
-        <option value="cod">代金引換</option>
-      </select>
-      <button type="submit" disabled={loading}>
-        {loading ? '注文処理中...' : '注文確定'}
-      </button>
-    </form>
-  );
-};
-
-export { OrderForm };
-```
-
-#### 決済機能の実装例
-
-```
-features/payment/
-├── components/PaymentForm.tsx
-├── hooks/usePayment.ts
-├── utils/paymentUtils.ts
-└── types/payment.types.ts
-```
-
-```typescript
-// features/payment/types/payment.types.ts - 決済関連の型定義
-export interface PaymentData {
-  cardNumber: string;
-  expiry: string;
-  cvv: string;
-  cardName: string;
-  amount: number;
-}
-
-// features/payment/utils/paymentUtils.ts - 決済関連のユーティリティ
-export const encryptCardData = (data: PaymentData): string => {
-  // 実際の暗号化処理
-  return btoa(JSON.stringify(data));
-};
-
-export const validateCardNumber = (cardNumber: string): boolean => {
-  return /^\d{16}$/.test(cardNumber.replace(/\s/g, ''));
-};
-
-export const validateCVV = (cvv: string): boolean => {
-  return /^\d{3}$/.test(cvv);
-};
-
-// features/payment/hooks/usePayment.ts - 決済ロジックのみ
-import { useState } from 'react';
-import { PaymentData } from '../types/payment.types';
-import { encryptCardData } from '../utils/paymentUtils';
-import { paymentAPI } from '../../../shared/api/paymentAPI';
-
-const usePayment = () => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const processPayment = async (data: PaymentData) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const encryptedCard = encryptCardData(data);
-      await paymentAPI.process({
-        ...data,
-        cardData: encryptedCard
-      });
-      showSuccessMessage('決済が完了しました');
-    } catch (err) {
-      setError('決済に失敗しました');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return { processPayment, loading, error };
-};
-
-export { usePayment };
-
-// features/payment/components/PaymentForm.tsx - プレゼンテーションのみ
-import React, { useState } from 'react';
-import { usePayment } from '../hooks/usePayment';
-import { validateCardNumber, validateCVV } from '../utils/paymentUtils';
-
-const PaymentForm = () => {
-  const { processPayment, loading, error } = usePayment();
-  const [cardNumber, setCardNumber] = useState('');
-  const [expiry, setExpiry] = useState('');
-  const [cvv, setCvv] = useState('');
-  const [cardName, setCardName] = useState('');
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // バリデーション
-    if (!validateCardNumber(cardNumber)) {
-      alert('カード番号が正しくありません');
-      return;
-    }
-    if (!validateCVV(cvv)) {
-      alert('CVVが正しくありません');
-      return;
-    }
-
-    processPayment({
-      cardNumber,
-      expiry,
-      cvv,
-      cardName,
-      amount: 1000 // 実際には注文金額
-    });
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="payment-form">
-      <h2>決済情報</h2>
-      {error && <div className="error">{error}</div>}
-      <input 
-        type="text" 
-        value={cardNumber}
-        onChange={(e) => setCardNumber(e.target.value)}
-        placeholder="カード番号"
-        required
-      />
-      <div className="card-details">
-        <input 
-          type="text" 
-          value={expiry}
-          onChange={(e) => setExpiry(e.target.value)}
-          placeholder="MM/YY"
-          required
-        />
-        <input 
-          type="text" 
-          value={cvv}
-          onChange={(e) => setCvv(e.target.value)}
-          placeholder="CVV"
-          maxLength={3}
-          required
-        />
-      </div>
-      <input 
-        type="text" 
-        value={cardName}
-        onChange={(e) => setCardName(e.target.value)}
-        placeholder="カード名義"
-        required
-      />
-      <button type="submit" disabled={loading}>
-        {loading ? '決済処理中...' : '決済実行'}
-      </button>
-    </form>
-  );
-};
-
-export { PaymentForm };
-```
+- **注文機能** (`features/order/`): 配送先・支払い方法の管理
+- **決済機能** (`features/payment/`): カード情報・決済処理
+- **商品管理** (`features/product/`): 商品登録・編集
+- **レビュー機能** (`features/review/`): 評価・コメント投稿
 
 ### 改善効果の比較
 
