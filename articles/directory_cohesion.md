@@ -414,33 +414,6 @@ const CommonForm = ({ type, data, onSubmit }: CommonFormProps) => {
     onSubmit?.(formData);
   };
 
-  // すべてのフォームのバリデーション処理が混在
-  const validateField = (field: string, value: any) => {
-    if (type === 'login') {
-      if (field === 'email' && !value.includes('@')) {
-        setErrors(prev => ({ ...prev, email: 'メール形式が正しくありません' }));
-      }
-      if (field === 'password' && value.length < 8) {
-        setErrors(prev => ({ ...prev, password: 'パスワードは8文字以上です' }));
-      }
-    } else if (type === 'product') {
-      if (field === 'name' && value.length < 2) {
-        setErrors(prev => ({ ...prev, name: '商品名は2文字以上です' }));
-      }
-      if (field === 'price' && value <= 0) {
-        setErrors(prev => ({ ...prev, price: '価格は0円より大きくしてください' }));
-      }
-    } else if (type === 'payment') {
-      if (field === 'cardNumber' && !validateCreditCard(value)) {
-        setErrors(prev => ({ ...prev, cardNumber: 'カード番号が正しくありません' }));
-      }
-      if (field === 'cvv' && value.length !== 3) {
-        setErrors(prev => ({ ...prev, cvv: 'CVVは3桁です' }));
-      }
-    }
-    // ... 他のフォームのバリデーション処理も延々と続く
-  };
-
   // レンダリングも巨大な条件分岐
   const renderFormFields = () => {
     if (type === 'login') {
@@ -449,22 +422,13 @@ const CommonForm = ({ type, data, onSubmit }: CommonFormProps) => {
           <input 
             type="email" 
             placeholder="メールアドレス"
-            onChange={(e) => {
-              setFormData(prev => ({ ...prev, email: e.target.value }));
-              validateField('email', e.target.value);
-            }}
+            onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
           />
           <input 
             type="password" 
             placeholder="パスワード"
-            onChange={(e) => {
-              setFormData(prev => ({ ...prev, password: e.target.value }));
-              validateField('password', e.target.value);
-            }}
+            onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
           />
-          <div className="forgot-password">
-            <a href="/forgot-password">パスワードを忘れた方</a>
-          </div>
         </>
       );
     } else if (type === 'order') {
@@ -478,13 +442,7 @@ const CommonForm = ({ type, data, onSubmit }: CommonFormProps) => {
             <option value="">支払い方法を選択</option>
             <option value="credit">クレジットカード</option>
             <option value="bank">銀行振込</option>
-            <option value="cod">代金引換</option>
           </select>
-          <div className="order-summary">
-            <p>小計: ¥{formData.subtotal}</p>
-            <p>税込: ¥{formData.subtotal * 1.1}</p>
-            <p>送料: ¥{calculateShipping(formData.items)}</p>
-          </div>
         </>
       );
     } else if (type === 'product') {
@@ -493,35 +451,17 @@ const CommonForm = ({ type, data, onSubmit }: CommonFormProps) => {
           <input 
             type="text" 
             placeholder="商品名"
-            onChange={(e) => {
-              setFormData(prev => ({ ...prev, name: e.target.value }));
-              validateField('name', e.target.value);
-            }}
+            onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
           />
           <input 
             type="number" 
             placeholder="価格"
-            onChange={(e) => {
-              const price = Number(e.target.value);
-              setFormData(prev => ({ ...prev, price }));
-              validateField('price', price);
-            }}
+            onChange={(e) => setFormData(prev => ({ ...prev, price: Number(e.target.value) }))}
           />
           <textarea 
             placeholder="商品説明"
             onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
           />
-          <input 
-            type="file" 
-            accept="image/*"
-            onChange={(e) => setFormData(prev => ({ ...prev, imageFile: e.target.files?.[0] }))}
-          />
-          <select onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}>
-            <option value="">カテゴリを選択</option>
-            <option value="electronics">電子機器</option>
-            <option value="clothing">衣類</option>
-            <option value="books">書籍</option>
-          </select>
         </>
       );
     } else if (type === 'payment') {
@@ -530,36 +470,18 @@ const CommonForm = ({ type, data, onSubmit }: CommonFormProps) => {
           <input 
             type="text" 
             placeholder="カード番号"
-            onChange={(e) => {
-              setFormData(prev => ({ ...prev, cardNumber: e.target.value }));
-              validateField('cardNumber', e.target.value);
-            }}
+            onChange={(e) => setFormData(prev => ({ ...prev, cardNumber: e.target.value }))}
           />
-          <div className="card-details">
-            <input 
-              type="text" 
-              placeholder="MM/YY"
-              onChange={(e) => setFormData(prev => ({ ...prev, expiry: e.target.value }))}
-            />
-            <input 
-              type="text" 
-              placeholder="CVV"
-              onChange={(e) => {
-                setFormData(prev => ({ ...prev, cvv: e.target.value }));
-                validateField('cvv', e.target.value);
-              }}
-            />
-          </div>
           <input 
             type="text" 
-            placeholder="カード名義"
-            onChange={(e) => setFormData(prev => ({ ...prev, cardName: e.target.value }))}
+            placeholder="MM/YY"
+            onChange={(e) => setFormData(prev => ({ ...prev, expiry: e.target.value }))}
           />
-          <div className="payment-summary">
-            <p>決済金額: ¥{formData.total}</p>
-            <p>手数料: ¥{formData.fee}</p>
-            <p>合計: ¥{formData.total + formData.fee}</p>
-          </div>
+          <input 
+            type="text" 
+            placeholder="CVV"
+            onChange={(e) => setFormData(prev => ({ ...prev, cvv: e.target.value }))}
+          />
         </>
       );
     } else if (type === 'review') {
@@ -580,19 +502,6 @@ const CommonForm = ({ type, data, onSubmit }: CommonFormProps) => {
             placeholder="レビューを書く"
             onChange={(e) => setFormData(prev => ({ ...prev, text: e.target.value }))}
           />
-          <label>
-            <input 
-              type="checkbox"
-              onChange={(e) => setFormData(prev => ({ ...prev, anonymous: e.target.checked }))}
-            />
-            匿名で投稿
-          </label>
-          <input 
-            type="file" 
-            accept="image/*"
-            multiple
-            onChange={(e) => setFormData(prev => ({ ...prev, images: Array.from(e.target.files || []) }))}
-          />
         </>
       );
     } else if (type === 'profile') {
@@ -604,34 +513,11 @@ const CommonForm = ({ type, data, onSubmit }: CommonFormProps) => {
             value={formData.displayName || ''}
             onChange={(e) => setFormData(prev => ({ ...prev, displayName: e.target.value }))}
           />
-          <input 
-            type="file" 
-            accept="image/*"
-            onChange={(e) => setFormData(prev => ({ ...prev, avatarFile: e.target.files?.[0] }))}
-          />
           <textarea 
             placeholder="自己紹介"
             value={formData.bio || ''}
             onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
           />
-          <div className="privacy-settings">
-            <label>
-              <input 
-                type="checkbox"
-                checked={formData.publicProfile || false}
-                onChange={(e) => setFormData(prev => ({ ...prev, publicProfile: e.target.checked }))}
-              />
-              プロフィールを公開する
-            </label>
-            <label>
-              <input 
-                type="checkbox"
-                checked={formData.emailNotifications || false}
-                onChange={(e) => setFormData(prev => ({ ...prev, emailNotifications: e.target.checked }))}
-              />
-              メール通知を受け取る
-            </label>
-          </div>
         </>
       );
     }
@@ -667,6 +553,17 @@ const CommonForm = ({ type, data, onSubmit }: CommonFormProps) => {
     </form>
   );
 };
+```
+
+:::
+
+**このコンポーネントの問題点：**
+
+1. **6つの無関係な機能が混在**: ログイン、注文、商品登録、決済、レビュー、プロフィール編集
+2. **巨大な条件分岐**: type別のif-else文とswitch文が複雑に絡み合う
+3. **責任の曖昧さ**: 一つのコンポーネントで認証・EC・ユーザー管理を全て担当
+4. **テスト困難**: 6つの機能を1つのコンポーネントでテストする必要
+5. **並行開発不可**: 複数の機能を同時に開発することが困難
 
 // さらに酷い例：UniversalFormModal.tsx - 1500行を超える巨大コンポーネント
 const UniversalFormModal = ({ 
