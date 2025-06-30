@@ -590,9 +590,54 @@ const CommonForm = ({ type, data, onSubmit }: CommonFormProps) => {
 
 ### 機能的凝集コンポーネントへの改善例
 
-論理的凝集を機能的凝集に改善するには、単一責任の原則に従い、機能ごとに独立したコンポーネントを作成することが効果的です。
+論理的凝集を機能的凝集に改善するには、単一責任の原則に従い、機能ごとに独立したコンポーネントを作成することが効果的です。ディレクトリ設計の章と同様に、feature-basedな構造を採用します。
 
-#### 改善後：機能別コンポーネント
+#### 改善後：機能別ディレクトリ構造とコンポーネント
+
+```
+src/
+├── features/
+│   ├── auth/
+│   │   ├── components/
+│   │   │   └── LoginForm.tsx       # 認証機能のみ
+│   │   ├── hooks/
+│   │   │   └── useLogin.ts         # 認証ロジックのみ
+│   │   └── types/
+│   │       └── auth.types.ts       # 認証関連の型定義
+│   ├── order/
+│   │   ├── components/
+│   │   │   └── OrderForm.tsx       # 注文機能のみ
+│   │   ├── hooks/
+│   │   │   └── useOrder.ts         # 注文ロジックのみ
+│   │   └── utils/
+│   │       └── orderUtils.ts       # 注文関連のユーティリティ
+│   ├── product/
+│   │   ├── components/
+│   │   │   └── ProductForm.tsx     # 商品管理機能のみ
+│   │   ├── hooks/
+│   │   │   └── useProduct.ts       # 商品ロジックのみ
+│   │   └── utils/
+│   │       └── productUtils.ts     # 商品関連のユーティリティ
+│   ├── payment/
+│   │   ├── components/
+│   │   │   └── PaymentForm.tsx     # 決済機能のみ
+│   │   ├── hooks/
+│   │   │   └── usePayment.ts       # 決済ロジックのみ
+│   │   └── utils/
+│   │       └── paymentUtils.ts     # 決済関連のユーティリティ
+│   └── review/
+│       ├── components/
+│       │   └── ReviewForm.tsx      # レビュー機能のみ
+│       ├── hooks/
+│       │   └── useReview.ts        # レビューロジックのみ
+│       └── utils/
+│           └── reviewUtils.ts      # レビュー関連のユーティリティ
+└── shared/
+    ├── components/
+    │   └── FormField.tsx           # 本当に共通のUIコンポーネント
+    └── utils/
+        └── formatUtils.ts          # 本当に共通のユーティリティ
+```
 
 ```typescript
 // features/auth/components/LoginForm.tsx - 認証機能のみ
@@ -815,10 +860,35 @@ const ReviewForm = ({ onSubmit }: { onSubmit: (data: ReviewData) => void }) => {
 
 ### カスタムフックによる状態管理の分離
 
-さらに機能的凝集度を高めるため、カスタムフックを使用してロジックとプレゼンテーションを分離します。
+さらに機能的凝集度を高めるため、カスタムフックを使用してロジックとプレゼンテーションを分離します。各機能のディレクトリ内にフックを配置することで、関連するロジックが一箇所にまとまります。
+
+#### 認証機能の実装例
+
+```
+features/auth/
+├── components/LoginForm.tsx
+├── hooks/useLogin.ts
+└── types/auth.types.ts
+```
 
 ```typescript
+// features/auth/types/auth.types.ts - 認証関連の型定義
+export interface LoginData {
+  email: string;
+  password: string;
+}
+
+export interface AuthUser {
+  id: string;
+  email: string;
+  name: string;
+}
+
 // features/auth/hooks/useLogin.ts - 認証ロジックのみ
+import { useState } from 'react';
+import { LoginData } from '../types/auth.types';
+import { authAPI } from '../../../shared/api/authAPI';
+
 const useLogin = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -839,7 +909,12 @@ const useLogin = () => {
   return { login, loading, error };
 };
 
+export { useLogin };
+
 // features/auth/components/LoginForm.tsx - プレゼンテーションのみ
+import React, { useState } from 'react';
+import { useLogin } from '../hooks/useLogin';
+
 const LoginForm = () => {
   const { login, loading, error } = useLogin();
   const [email, setEmail] = useState('');
@@ -875,7 +950,44 @@ const LoginForm = () => {
   );
 };
 
+export { LoginForm };
+```
+
+#### 注文機能の実装例
+
+```
+features/order/
+├── components/OrderForm.tsx
+├── hooks/useOrder.ts
+├── utils/orderUtils.ts
+└── types/order.types.ts
+```
+
+```typescript
+// features/order/types/order.types.ts - 注文関連の型定義
+export interface OrderData {
+  shippingAddress: string;
+  paymentMethod: string;
+  items: CartItem[];
+  subtotal: number;
+}
+
+// features/order/utils/orderUtils.ts - 注文関連のユーティリティ
+export const calculateTax = (subtotal: number): number => {
+  return subtotal * 0.1;
+};
+
+export const calculateShipping = (items: CartItem[]): number => {
+  const totalWeight = items.reduce((sum, item) => sum + item.weight, 0);
+  return totalWeight > 5 ? 800 : 500;
+};
+
 // features/order/hooks/useOrder.ts - 注文ロジックのみ
+import { useState } from 'react';
+import { OrderData } from '../types/order.types';
+import { calculateTax, calculateShipping } from '../utils/orderUtils';
+import { orderAPI } from '../../../shared/api/orderAPI';
+
 const useOrder = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -902,7 +1014,97 @@ const useOrder = () => {
   return { createOrder, loading, error };
 };
 
+export { useOrder };
+
+// features/order/components/OrderForm.tsx - プレゼンテーションのみ
+import React, { useState } from 'react';
+import { useOrder } from '../hooks/useOrder';
+
+const OrderForm = () => {
+  const { createOrder, loading, error } = useOrder();
+  const [shippingAddress, setShippingAddress] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    createOrder({
+      shippingAddress,
+      paymentMethod,
+      items: [], // 実際にはカートから取得
+      subtotal: 0 // 実際にはカートから計算
+    });
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="order-form">
+      <h2>注文情報</h2>
+      {error && <div className="error">{error}</div>}
+      <textarea 
+        value={shippingAddress}
+        onChange={(e) => setShippingAddress(e.target.value)}
+        placeholder="配送先住所" 
+        required
+      />
+      <select 
+        value={paymentMethod}
+        onChange={(e) => setPaymentMethod(e.target.value)}
+        required
+      >
+        <option value="">支払い方法を選択</option>
+        <option value="credit">クレジットカード</option>
+        <option value="bank">銀行振込</option>
+        <option value="cod">代金引換</option>
+      </select>
+      <button type="submit" disabled={loading}>
+        {loading ? '注文処理中...' : '注文確定'}
+      </button>
+    </form>
+  );
+};
+
+export { OrderForm };
+```
+
+#### 決済機能の実装例
+
+```
+features/payment/
+├── components/PaymentForm.tsx
+├── hooks/usePayment.ts
+├── utils/paymentUtils.ts
+└── types/payment.types.ts
+```
+
+```typescript
+// features/payment/types/payment.types.ts - 決済関連の型定義
+export interface PaymentData {
+  cardNumber: string;
+  expiry: string;
+  cvv: string;
+  cardName: string;
+  amount: number;
+}
+
+// features/payment/utils/paymentUtils.ts - 決済関連のユーティリティ
+export const encryptCardData = (data: PaymentData): string => {
+  // 実際の暗号化処理
+  return btoa(JSON.stringify(data));
+};
+
+export const validateCardNumber = (cardNumber: string): boolean => {
+  return /^\d{16}$/.test(cardNumber.replace(/\s/g, ''));
+};
+
+export const validateCVV = (cvv: string): boolean => {
+  return /^\d{3}$/.test(cvv);
+};
+
 // features/payment/hooks/usePayment.ts - 決済ロジックのみ
+import { useState } from 'react';
+import { PaymentData } from '../types/payment.types';
+import { encryptCardData } from '../utils/paymentUtils';
+import { paymentAPI } from '../../../shared/api/paymentAPI';
+
 const usePayment = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -926,6 +1128,86 @@ const usePayment = () => {
 
   return { processPayment, loading, error };
 };
+
+export { usePayment };
+
+// features/payment/components/PaymentForm.tsx - プレゼンテーションのみ
+import React, { useState } from 'react';
+import { usePayment } from '../hooks/usePayment';
+import { validateCardNumber, validateCVV } from '../utils/paymentUtils';
+
+const PaymentForm = () => {
+  const { processPayment, loading, error } = usePayment();
+  const [cardNumber, setCardNumber] = useState('');
+  const [expiry, setExpiry] = useState('');
+  const [cvv, setCvv] = useState('');
+  const [cardName, setCardName] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // バリデーション
+    if (!validateCardNumber(cardNumber)) {
+      alert('カード番号が正しくありません');
+      return;
+    }
+    if (!validateCVV(cvv)) {
+      alert('CVVが正しくありません');
+      return;
+    }
+
+    processPayment({
+      cardNumber,
+      expiry,
+      cvv,
+      cardName,
+      amount: 1000 // 実際には注文金額
+    });
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="payment-form">
+      <h2>決済情報</h2>
+      {error && <div className="error">{error}</div>}
+      <input 
+        type="text" 
+        value={cardNumber}
+        onChange={(e) => setCardNumber(e.target.value)}
+        placeholder="カード番号"
+        required
+      />
+      <div className="card-details">
+        <input 
+          type="text" 
+          value={expiry}
+          onChange={(e) => setExpiry(e.target.value)}
+          placeholder="MM/YY"
+          required
+        />
+        <input 
+          type="text" 
+          value={cvv}
+          onChange={(e) => setCvv(e.target.value)}
+          placeholder="CVV"
+          maxLength={3}
+          required
+        />
+      </div>
+      <input 
+        type="text" 
+        value={cardName}
+        onChange={(e) => setCardName(e.target.value)}
+        placeholder="カード名義"
+        required
+      />
+      <button type="submit" disabled={loading}>
+        {loading ? '決済処理中...' : '決済実行'}
+      </button>
+    </form>
+  );
+};
+
+export { PaymentForm };
 ```
 
 ### 改善効果の比較
@@ -934,6 +1216,7 @@ const usePayment = () => {
 
 | 観点 | 論理的凝集（改善前） | 機能的凝集（改善後） |
 |------|-------------------|-------------------|
+| **ディレクトリ構造** | 技術別分類（components/, hooks/, utils/）| 機能別分類（features/auth/, features/order/） |
 | **ファイルサイズ** | 1つの巨大ファイル（1500行+） | 各機能100-200行の適切なサイズ |
 | **責任の明確さ** | 6つの機能が混在 | 1つのコンポーネント = 1つの機能 |
 | **テスト容易性** | 6つの機能を同時にテスト | 機能ごとに独立したテスト |
@@ -941,8 +1224,54 @@ const usePayment = () => {
 | **再利用性** | 他の機能と密結合で再利用困難 | 単一機能で再利用しやすい |
 | **デバッグ** | 問題の原因特定が困難 | エラーの発生箇所が明確 |
 | **学習コスト** | 新メンバーが全機能を理解する必要 | 担当機能のみ理解すれば開始可能 |
+| **関連ファイルの発見** | 関連ファイルが技術別に分散 | 1つのfeatureディレクトリに集約 |
 
-このように機能別にコンポーネントを分割し、カスタムフックでロジックを分離することで、各コンポーネントの責任が明確になり、保守性・テスタビリティ・再利用性が大幅に向上します。
+#### 機能別ディレクトリ構造の具体的なメリット
+
+**1. 関連ファイルの集約**
+```
+# 論理的凝集（改善前）- 認証機能のファイルが分散
+src/
+├── components/LoginForm.tsx      # 認証コンポーネント
+├── hooks/useLogin.ts            # 認証フック  
+├── utils/authUtils.ts           # 認証ユーティリティ
+├── types/auth.types.ts          # 認証型定義
+└── api/authAPI.ts               # 認証API
+
+# 機能的凝集（改善後）- 認証機能のファイルが集約
+src/features/auth/
+├── components/LoginForm.tsx     # すべて同じディレクトリに
+├── hooks/useLogin.ts           
+├── utils/authUtils.ts          
+├── types/auth.types.ts         
+└── api/authAPI.ts              
+```
+
+**2. チーム開発での責任分界**
+- **認証チーム**: `features/auth/` 配下のみを担当
+- **注文チーム**: `features/order/` 配下のみを担当
+- **決済チーム**: `features/payment/` 配下のみを担当
+
+各チームが独立して開発できるため、Git のコンフリクトが大幅に減少します。
+
+**3. 段階的リファクタリング**
+```typescript
+// Step 1: 既存のCommonFormから認証機能だけを抽出
+features/auth/components/LoginForm.tsx
+
+// Step 2: 認証ロジックをカスタムフックに分離
+features/auth/hooks/useLogin.ts
+
+// Step 3: 認証関連のユーティリティを移動
+features/auth/utils/authUtils.ts
+
+// Step 4: 型定義を整理
+features/auth/types/auth.types.ts
+```
+
+このように段階的に移行することで、リスクを最小限に抑えながら改善できます。
+
+このように機能別にディレクトリとコンポーネントを分割し、カスタムフックでロジックを分離することで、各機能の責任が明確になり、保守性・テスタビリティ・再利用性が大幅に向上します。
 
 
 ## まとめ
