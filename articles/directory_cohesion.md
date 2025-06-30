@@ -564,6 +564,255 @@ const CommonForm = ({ type, data, onSubmit }: CommonFormProps) => {
 4. **テスト困難**: 6つの機能を1つのコンポーネントでテストする必要
 5. **並行開発不可**: 複数の機能を同時に開発することが困難
 
+### 論理的凝集コンポーネントの問題点
+
+上記のような巨大な論理的凝集コンポーネントが生まれると、開発チーム全体に深刻な影響を与えます。これはコードリーディング（プログラム理解）の研究で明らかになっている問題と直結しています。
+
+**研究で明らかになった事実：**
+開発者は作業時間の58〜70%をコード理解に費やしています（Xia et al. 2018, Feitelson et al. 2023）。論理的凝集のような低品質なコードは、この理解時間を更に増加させ、開発効率を著しく低下させます。
+
+**CommonFormの具体的な問題：**
+- **ログインフォーム**（認証機能）
+- **注文フォーム**（注文機能）
+- **商品登録フォーム**（商品管理機能）
+- **決済フォーム**（決済機能）
+- **レビューフォーム**（レビュー機能）
+- **プロフィール編集フォーム**（ユーザー管理機能）
+
+これらは「フォーム」という表面的な共通点はあるものの、実際には全く異なるビジネス機能に属しており、変更理由も変更タイミングも異なります。
+
+**実際に起こる問題：**
+1. **影響範囲の拡大**: ログインフォームのスタイルを変更したいだけなのに、決済・レビューフォームのテストも必要になる
+2. **並行開発の阻害**: 複数チームが同じコンポーネントを同時に変更してコンフリクトが発生
+3. **理解の困難**: 新しいメンバーが「なぜこれらのフォームが一つのコンポーネントにあるのか」理解できない
+4. **テストの複雑化**: 一つのコンポーネントで多数の機能をテストする必要がある
+5. **デバッグ地獄**: エラーの原因特定に数時間から数日かかる
+
+### 機能的凝集コンポーネントへの改善例
+
+論理的凝集を機能的凝集に改善するには、単一責任の原則に従い、機能ごとに独立したコンポーネントを作成することが効果的です。
+
+#### 改善後：機能別コンポーネント
+
+```typescript
+// features/auth/components/LoginForm.tsx - 認証機能のみ
+const LoginForm = ({ onSubmit }: { onSubmit: (data: LoginData) => void }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit({ email, password });
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="login-form">
+      <h2>ログイン</h2>
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="メールアドレス"
+        required
+      />
+      <input
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="パスワード"
+        required
+      />
+      <button type="submit">ログイン</button>
+      <div className="forgot-password">
+        <a href="/forgot-password">パスワードを忘れた方</a>
+      </div>
+    </form>
+  );
+};
+
+// features/order/components/OrderForm.tsx - 注文機能のみ
+const OrderForm = ({ onSubmit }: { onSubmit: (data: OrderData) => void }) => {
+  const [shippingAddress, setShippingAddress] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit({ shippingAddress, paymentMethod });
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="order-form">
+      <h2>注文情報</h2>
+      <textarea 
+        value={shippingAddress}
+        onChange={(e) => setShippingAddress(e.target.value)}
+        placeholder="配送先住所" 
+        required
+      />
+      <select 
+        value={paymentMethod}
+        onChange={(e) => setPaymentMethod(e.target.value)}
+        required
+      >
+        <option value="">支払い方法を選択</option>
+        <option value="credit">クレジットカード</option>
+        <option value="bank">銀行振込</option>
+        <option value="cod">代金引換</option>
+      </select>
+      <button type="submit">注文確定</button>
+    </form>
+  );
+};
+
+// features/product/components/ProductForm.tsx - 商品管理機能のみ
+const ProductForm = ({ onSubmit }: { onSubmit: (data: ProductData) => void }) => {
+  const [name, setName] = useState('');
+  const [price, setPrice] = useState(0);
+  const [description, setDescription] = useState('');
+  const [category, setCategory] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit({ name, price, description, category });
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="product-form">
+      <h2>商品登録</h2>
+      <input 
+        type="text" 
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="商品名"
+        required
+      />
+      <input 
+        type="number" 
+        value={price}
+        onChange={(e) => setPrice(Number(e.target.value))}
+        placeholder="価格"
+        min="0"
+        required
+      />
+      <textarea 
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        placeholder="商品説明"
+        required
+      />
+      <select 
+        value={category}
+        onChange={(e) => setCategory(e.target.value)}
+        required
+      >
+        <option value="">カテゴリを選択</option>
+        <option value="electronics">電子機器</option>
+        <option value="clothing">衣類</option>
+        <option value="books">書籍</option>
+      </select>
+      <button type="submit">商品登録</button>
+    </form>
+  );
+};
+
+// features/payment/components/PaymentForm.tsx - 決済機能のみ
+const PaymentForm = ({ onSubmit }: { onSubmit: (data: PaymentData) => void }) => {
+  const [cardNumber, setCardNumber] = useState('');
+  const [expiry, setExpiry] = useState('');
+  const [cvv, setCvv] = useState('');
+  const [cardName, setCardName] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit({ cardNumber, expiry, cvv, cardName });
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="payment-form">
+      <h2>決済情報</h2>
+      <input 
+        type="text" 
+        value={cardNumber}
+        onChange={(e) => setCardNumber(e.target.value)}
+        placeholder="カード番号"
+        required
+      />
+      <div className="card-details">
+        <input 
+          type="text" 
+          value={expiry}
+          onChange={(e) => setExpiry(e.target.value)}
+          placeholder="MM/YY"
+          required
+        />
+        <input 
+          type="text" 
+          value={cvv}
+          onChange={(e) => setCvv(e.target.value)}
+          placeholder="CVV"
+          maxLength={3}
+          required
+        />
+      </div>
+      <input 
+        type="text" 
+        value={cardName}
+        onChange={(e) => setCardName(e.target.value)}
+        placeholder="カード名義"
+        required
+      />
+      <button type="submit">決済実行</button>
+    </form>
+  );
+};
+
+// features/review/components/ReviewForm.tsx - レビュー機能のみ
+const ReviewForm = ({ onSubmit }: { onSubmit: (data: ReviewData) => void }) => {
+  const [rating, setRating] = useState(0);
+  const [text, setText] = useState('');
+  const [anonymous, setAnonymous] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit({ rating, text, anonymous });
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="review-form">
+      <h2>レビュー投稿</h2>
+      <div className="rating">
+        <label>評価:</label>
+        {[1, 2, 3, 4, 5].map(star => (
+          <button 
+            key={star}
+            type="button"
+            onClick={() => setRating(star)}
+            className={rating >= star ? 'active' : ''}
+          >
+            ★
+          </button>
+        ))}
+      </div>
+      <textarea 
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        placeholder="レビューを書く"
+        required
+      />
+      <label>
+        <input 
+          type="checkbox"
+          checked={anonymous}
+          onChange={(e) => setAnonymous(e.target.checked)}
+        />
+        匿名で投稿
+      </label>
+      <button type="submit">レビュー投稿</button>
+    </form>
+  );
+};
+```
+
 ### カスタムフックによる状態管理の分離
 
 さらに機能的凝集度を高めるため、カスタムフックを使用してロジックとプレゼンテーションを分離します。
@@ -579,7 +828,7 @@ const useLogin = () => {
     setError(null);
     try {
       await authAPI.login(data);
-      // ログイン成功処理
+      router.push('/dashboard');
     } catch (err) {
       setError('ログインに失敗しました');
     } finally {
@@ -603,18 +852,21 @@ const LoginForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="login-form">
+      <h2>ログイン</h2>
       {error && <div className="error">{error}</div>}
       <input 
         type="email" 
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="メールアドレス" 
+        required
       />
       <input 
         type="password" 
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         placeholder="パスワード" 
+        required
       />
       <button type="submit" disabled={loading}>
         {loading ? 'ログイン中...' : 'ログイン'}
@@ -622,7 +874,73 @@ const LoginForm = () => {
     </form>
   );
 };
+
+// features/order/hooks/useOrder.ts - 注文ロジックのみ
+const useOrder = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const createOrder = async (data: OrderData) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const orderData = {
+        ...data,
+        tax: calculateTax(data.subtotal),
+        shipping: calculateShipping(data.items)
+      };
+      await orderAPI.create(orderData);
+      showSuccessMessage('注文が完了しました');
+      router.push('/orders');
+    } catch (err) {
+      setError('注文に失敗しました');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { createOrder, loading, error };
+};
+
+// features/payment/hooks/usePayment.ts - 決済ロジックのみ
+const usePayment = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const processPayment = async (data: PaymentData) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const encryptedCard = encryptCardData(data);
+      await paymentAPI.process({
+        ...data,
+        cardData: encryptedCard
+      });
+      showSuccessMessage('決済が完了しました');
+    } catch (err) {
+      setError('決済に失敗しました');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { processPayment, loading, error };
+};
 ```
+
+### 改善効果の比較
+
+機能的凝集に改善したことで、以下の効果が得られます：
+
+| 観点 | 論理的凝集（改善前） | 機能的凝集（改善後） |
+|------|-------------------|-------------------|
+| **ファイルサイズ** | 1つの巨大ファイル（1500行+） | 各機能100-200行の適切なサイズ |
+| **責任の明確さ** | 6つの機能が混在 | 1つのコンポーネント = 1つの機能 |
+| **テスト容易性** | 6つの機能を同時にテスト | 機能ごとに独立したテスト |
+| **並行開発** | 1つのファイルで競合 | 機能ごとに独立して開発可能 |
+| **再利用性** | 他の機能と密結合で再利用困難 | 単一機能で再利用しやすい |
+| **デバッグ** | 問題の原因特定が困難 | エラーの発生箇所が明確 |
+| **学習コスト** | 新メンバーが全機能を理解する必要 | 担当機能のみ理解すれば開始可能 |
 
 このように機能別にコンポーネントを分割し、カスタムフックでロジックを分離することで、各コンポーネントの責任が明確になり、保守性・テスタビリティ・再利用性が大幅に向上します。
 
