@@ -21,14 +21,7 @@ published: false
 
 本記事では、凝集度の概念をReactアプリケーションのディレクトリ設計とコンポーネント設計に適用し、保守性・拡張性・可読性の高いフロントエンドアプリケーションを構築する方法を解説します。
 
-### 本記事で学べること
-
-- 凝集度の基本概念と種類
-- フロントエンド開発における凝集度の具体的な適用例
-- 機能的凝集度に基づくディレクトリ構成
-- 単一責任を持つReactコンポーネントの設計手法
-- TypeScriptを活用した型安全で高凝集な設計パターン
-- チーム開発での実践的な導入戦略
+ちなみにこの記事のAI成分は95%です by 著者
 
 ## 凝集度とは何か
 
@@ -80,8 +73,6 @@ published: false
 
 ## 参考文献
 
-[^1]: https://qiita.com/uesho/items/59845b4891e12dfb3def#:~:text=%E5%87%9D%E9%9B%86%E5%BA%A6%E3%81%AE%E7%A8%AE%E9%A1%9E,%E8%A1%A8%E3%81%99%E3%81%93%E3%81%A8%E3%81%8C%E5%87%BA%E6%9D%A5%E3%81%BE%E3%81%99%E3%80%82&text=1%E3%81%8C%E6%9C%80%E3%82%82%E5%87%9D%E9%9B%86%E5%BA%A6,%E3%81%AA%E3%82%8A%E3%80%81%E4%BD%8E%E5%87%9D%E9%9B%86%E3%81%A8%E3%81%AA%E3%82%8B%E3%80%82
-
-https://note.com/cyberz_cto/n/n26f535d6c575#E0aBe
+[^1]: https://note.com/cyberz_cto/n/n26f535d6c575#E0aBe
 
 https://speakerdeck.com/noritakaikeda/ji-neng-de-ning-ji-nogai-nian-woyong-ite-fu-shu-roru-lei-si-noji-neng-woduo-kuhan-musisutemuno-hurontoendonokonponentowoshi-qie-nifen-ge-suru
