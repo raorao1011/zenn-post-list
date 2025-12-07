@@ -50,6 +50,23 @@ Webフロントエンドにおいては、論理的凝集と機能的凝集に�
 
 ECサイトの機能を例にします。
 
+以下の図は、プロジェクトの成長と共に、どのように機能的凝集から論理的凝集へ劣化していくかを示しています。
+
+```mermaid
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#e8f5e9','primaryTextColor':'#2e7d32','primaryBorderColor':'#4caf50','lineColor':'#ff9800','secondaryColor':'#fff3e0','tertiaryColor':'#ffebee'}}}%%
+graph LR
+    A["フェーズ1: 最初<br/>✅ 機能的凝集<br/>ユーザー機能のみ"] --> B["フェーズ2: 商品追加<br/>✅ 機能的凝集<br/>まだ問題なし"]
+    B --> C["フェーズ3: カート追加<br/>⚠️ 論理的凝集の種<br/>priceUtils.ts登場"]
+    C --> D["フェーズ4: 注文追加<br/>⚠️ 論理的凝集化<br/>無関係な機能混入"]
+    D --> E["フェーズ5: 決済・レビュー<br/>❌ 完全な論理的凝集<br/>保守性大幅低下"]
+
+    style A fill:#e8f5e9,stroke:#4caf50,stroke-width:2px
+    style B fill:#e8f5e9,stroke:#4caf50,stroke-width:2px
+    style C fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+    style D fill:#fff3e0,stroke:#ff9800,stroke-width:2px
+    style E fill:#ffebee,stroke:#f44336,stroke-width:2px
+```
+
 #### フェーズ1: 最初
 
 プロジェクト開始時は、機能が少ないため自然と機能的凝集になっています。各ファイルが単一の責任を持ち、理想的な状態です。
@@ -174,22 +191,42 @@ src/
 
 ```typescript
 // utils/priceUtils.ts - 「価格」「計算」という名前だけで無関係な機能が集まった状態
+
+// 🟦 商品機能に関する処理
 export const formatPrice = (price: number) => { /* 商品価格フォーマット */ };
+
+// 🟩 注文機能に関する処理
 export const calculateTax = (price: number) => { /* 税金計算 */ };
 export const calculateShipping = (items: CartItem[]) => { /* 送料計算 */ };
 export const applyDiscount = (price: number, rate: number) => { /* 割引適用 */ };
+
+// 🟨 ユーザー機能に関する処理
 export const calculatePoints = (price: number) => { /* ポイント計算 */ };
+
+// 🟧 決済機能に関する処理
 export const splitPayment = (total: number, methods: PaymentMethod[]) => { /* 分割払い計算 */ };
+
+// 🟥 返品機能に関する処理
 export const calculateRefund = (order: Order) => { /* 返金計算 */ };
 
 // utils/validationUtils.ts - 「バリデーション」という名前だけで無関係な機能が集まった状態
+
+// 🟦 ユーザー機能に関する処理
 export const validateEmail = (email: string) => { /* メール形式チェック */ };
 export const validatePassword = (password: string) => { /* パスワード強度チェック */ };
+
+// 🟩 決済機能に関する処理
 export const validateCreditCard = (number: string) => { /* クレジットカード番号チェック */ };
 export const validatePostalCode = (code: string) => { /* 郵便番号チェック */ };
+
+// 🟨 商品機能に関する処理
 export const validateProductName = (name: string) => { /* 商品名チェック */ };
+
+// 🟧 レビュー機能に関する処理
 export const validateReviewText = (text: string) => { /* レビュー内容チェック */ };
 ```
+
+このように、一つのファイルに複数の機能（🟦🟩🟨🟧🟥）が混在していることが分かります。これが論理的凝集の典型的な問題です。
 
 ### 論理的凝集の問題点
 
@@ -210,6 +247,81 @@ export const validateReviewText = (text: string) => { /* レビュー内容チ�
 1. **影響範囲の拡大**: 商品の価格表示を変更したいだけなのに、決済・返金機能のテストも必要になる
 2. **並行開発の阻害**: 複数チームが同じファイルを同時に変更してコンフリクトが発生
 3. **理解の困難**: 新しいメンバーが「なぜこれらの機能が一つのファイルにあるのか」理解できない
+
+#### 影響範囲の可視化
+
+以下の図は、「商品の価格表示フォーマットを変更したい」というシナリオで、論理的凝集と機能的凝集での影響範囲の違いを示しています。
+
+**❌ 論理的凝集の場合：影響範囲が広範囲に及ぶ**
+
+```mermaid
+graph TB
+    Change["変更: formatPrice関数<br/>（商品価格フォーマット）"]
+
+    File["priceUtils.ts<br/>⚠️ 論理的凝集ファイル"]
+
+    Product["🟦 商品機能<br/>（変更対象）"]
+    Order["🟩 注文機能<br/>（影響を受ける）"]
+    User["🟨 ユーザー機能<br/>（影響を受ける）"]
+    Payment["🟧 決済機能<br/>（影響を受ける）"]
+    Refund["🟥 返品機能<br/>（影響を受ける）"]
+
+    Test["😱 全機能のテストが必要<br/>- 商品表示テスト<br/>- 注文計算テスト<br/>- ポイント計算テスト<br/>- 決済処理テスト<br/>- 返金処理テスト"]
+
+    Change --> File
+    File --> Product
+    File --> Order
+    File --> User
+    File --> Payment
+    File --> Refund
+
+    Product --> Test
+    Order --> Test
+    User --> Test
+    Payment --> Test
+    Refund --> Test
+
+    style Change fill:#2196f3,stroke:#1976d2,stroke-width:2px,color:#fff
+    style File fill:#ffebee,stroke:#f44336,stroke-width:3px
+    style Product fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
+    style Order fill:#ffebee,stroke:#f44336,stroke-width:2px
+    style User fill:#ffebee,stroke:#f44336,stroke-width:2px
+    style Payment fill:#ffebee,stroke:#f44336,stroke-width:2px
+    style Refund fill:#ffebee,stroke:#f44336,stroke-width:2px
+    style Test fill:#ffebee,stroke:#f44336,stroke-width:3px
+```
+
+**✅ 機能的凝集の場合：影響範囲が限定的**
+
+```mermaid
+graph TB
+    Change2["変更: formatPrice関数<br/>（商品価格フォーマット）"]
+
+    ProductFile["features/product/<br/>productUtils.ts<br/>✅ 機能的凝集"]
+    OrderFile["features/order/<br/>orderUtils.ts"]
+    UserFile["features/user/<br/>userUtils.ts"]
+    PaymentFile["features/payment/<br/>paymentUtils.ts"]
+    RefundFile["features/refund/<br/>refundUtils.ts"]
+
+    ProductFunc["🟦 商品機能<br/>（変更対象）"]
+
+    TestLimited["😊 商品機能のテストのみ<br/>- 商品表示テスト"]
+
+    Change2 --> ProductFile
+    ProductFile --> ProductFunc
+    ProductFunc --> TestLimited
+
+    style Change2 fill:#2196f3,stroke:#1976d2,stroke-width:2px,color:#fff
+    style ProductFile fill:#e8f5e9,stroke:#4caf50,stroke-width:3px
+    style OrderFile fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px,stroke-dasharray: 5 5
+    style UserFile fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px,stroke-dasharray: 5 5
+    style PaymentFile fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px,stroke-dasharray: 5 5
+    style RefundFile fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px,stroke-dasharray: 5 5
+    style ProductFunc fill:#e8f5e9,stroke:#4caf50,stroke-width:2px
+    style TestLimited fill:#e8f5e9,stroke:#4caf50,stroke-width:3px
+```
+
+この図から、機能的凝集では変更の影響範囲が商品機能内に限定され、他の機能のテストが不要になることが分かります。
 
 ### 機能的凝集への改善例
 
