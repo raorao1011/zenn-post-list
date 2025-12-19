@@ -8,7 +8,7 @@ published: false
 
 こんにちは、RAOです。
 
-こちらは HRBrain Advent Calendar 2025 の19日目の記事です。
+こちらは HRBrain Advent Calendar 2025 の22日目の記事です。
 
 https://adventar.org/calendars/12091
 
