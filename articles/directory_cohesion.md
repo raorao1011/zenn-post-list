@@ -6,12 +6,13 @@ topics: ["react", "typescript", "frontend", "凝集度"]
 published: false
 ---
 
-## はじめに
 こんにちは、RAOです。
 
 こちらは HRBrain Advent Calendar 2025 の19日目の記事です。
 
 https://adventar.org/calendars/12091
+
+## はじめに
 
 フロントエンド開発において、プロジェクトが大規模化するにつれて、以下のようなコードの保守性や可読性が課題となることがよくあると思います。
 
