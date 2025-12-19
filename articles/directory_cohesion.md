@@ -322,13 +322,13 @@ graph TB
     ProductFunc --> TestLimited
 
     style Change2 fill:#2196f3,stroke:#1976d2,stroke-width:2px,color:#fff
-    style ProductFile fill:#e8f5e9,stroke:#4caf50,stroke-width:3px
-    style OrderFile fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px,stroke-dasharray: 5 5
-    style UserFile fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px,stroke-dasharray: 5 5
-    style PaymentFile fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px,stroke-dasharray: 5 5
-    style RefundFile fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px,stroke-dasharray: 5 5
-    style ProductFunc fill:#e8f5e9,stroke:#4caf50,stroke-width:2px
-    style TestLimited fill:#e8f5e9,stroke:#4caf50,stroke-width:3px
+    style ProductFile fill:#e8f5e9,stroke:#4caf50,stroke-width:3px,color:#000
+    style OrderFile fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px,stroke-dasharray: 5 5,color:#000
+    style UserFile fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px,stroke-dasharray: 5 5,color:#000
+    style PaymentFile fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px,stroke-dasharray: 5 5,color:#000
+    style RefundFile fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px,stroke-dasharray: 5 5,color:#000
+    style ProductFunc fill:#e8f5e9,stroke:#4caf50,stroke-width:2px,color:#000
+    style TestLimited fill:#e8f5e9,stroke:#4caf50,stroke-width:3px,color:#000
 ```
 
 この図から、機能的凝集では変更の影響範囲が商品機能内に限定され、他の機能のテストが不要になることが分かります。
