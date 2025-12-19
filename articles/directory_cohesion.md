@@ -48,41 +48,12 @@ Webフロントエンドにおいては、論理的凝集と機能的凝集に�
 
 ECサイトの機能を例にします。
 
-以下の図は、プロジェクトの成長と共に、どのように機能的凝集から論理的凝集へ劣化していくかを示しています。
-
-```mermaid
-%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#e8f5e9','primaryTextColor':'#2e7d32','primaryBorderColor':'#4caf50','lineColor':'#ff9800','secondaryColor':'#fff3e0','tertiaryColor':'#ffebee'}}}%%
-graph LR
-    A["フェーズ1: 最初<br/>✅ 機能的凝集<br/>ユーザー機能のみ"] --> B["フェーズ2: 商品追加<br/>✅ 機能的凝集<br/>まだ問題なし"]
-    B --> C["フェーズ3: カート追加<br/>⚠️ 論理的凝集の種<br/>priceUtils.ts登場"]
-    C --> D["フェーズ4: 注文追加<br/>⚠️ 論理的凝集化<br/>無関係な機能混入"]
-    D --> E["フェーズ5: 決済・レビュー<br/>❌ 完全な論理的凝集<br/>保守性大幅低下"]
-
-    style A fill:#e8f5e9,stroke:#4caf50,stroke-width:2px
-    style B fill:#e8f5e9,stroke:#4caf50,stroke-width:2px
-    style C fill:#fff3e0,stroke:#ff9800,stroke-width:2px
-    style D fill:#fff3e0,stroke:#ff9800,stroke-width:2px
-    style E fill:#ffebee,stroke:#f44336,stroke-width:2px
-```
-
 #### フェーズ1: 最初
-![](https://storage.googleapis.com/zenn-user-upload/8fb7b528a457-20251219.png)
 プロジェクト開始時は、機能が少ないため自然と機能的凝集になっています。各ファイルが単一の責任を持ち、理想的な状態です。
 
 **画面イメージ：**
 
-```mermaid
-%%{init: {'theme':'base', 'themeVariables': { 'fontSize':'14px'}}}%%
-graph TB
-    subgraph UI["🖥️ ユーザープロフィール画面"]
-        Header["ECサイト"]
-        Profile["👤 ユーザープロフィール<br/>──────────────<br/>名前: 山田太郎<br/>メール: yamada@example.com<br/>登録日: 2024/01/01"]
-    end
-
-    style UI fill:#f5f5f5,stroke:#333,stroke-width:2px
-    style Header fill:#2196f3,stroke:#1976d2,stroke-width:2px,color:#fff
-    style Profile fill:#fff,stroke:#ddd,stroke-width:1px
-```
+![](https://storage.googleapis.com/zenn-user-upload/8fb7b528a457-20251219.png)
 
 **ディレクトリ構成：**
 
@@ -97,23 +68,12 @@ src/
 ```
 
 #### フェーズ2: 商品機能追加
-![](https://storage.googleapis.com/zenn-user-upload/7206a072f40d-20251219.png)
+
 新しい機能（商品）を追加しても、まだ各ファイルの責任は明確です。技術的分類でのディレクトリ構成でも問題ありません。
 
 **画面イメージ：**
 
-```mermaid
-%%{init: {'theme':'base', 'themeVariables': { 'fontSize':'14px'}}}%%
-graph TB
-    subgraph UI["🖥️ 商品一覧画面"]
-        Header["ECサイト"]
-        Products["📦 商品一覧<br/>──────────────<br/>┌─────────────┐<br/>│ 商品A │<br/>│ ¥1,000 │<br/>└─────────────┘<br/>┌─────────────┐<br/>│ 商品B │<br/>│ ¥2,500 │<br/>└─────────────┘"]
-    end
-
-    style UI fill:#f5f5f5,stroke:#333,stroke-width:2px
-    style Header fill:#2196f3,stroke:#1976d2,stroke-width:2px,color:#fff
-    style Products fill:#fff,stroke:#ddd,stroke-width:1px
-```
+![](https://storage.googleapis.com/zenn-user-upload/7206a072f40d-20251219.png)
 
 **ディレクトリ構成：**
 
@@ -131,23 +91,11 @@ src/
 ```
 
 #### フェーズ3: カート機能追加
-![](https://storage.googleapis.com/zenn-user-upload/09f37dc20938-20251219.png)
 カート機能追加時、価格に関する処理を`priceUtils.ts`としてまとめ始めます。この時点では問題無いように見えますが、論理的凝集の種が蒔かれています。
 
 **画面イメージ：**
 
-```mermaid
-%%{init: {'theme':'base', 'themeVariables': { 'fontSize':'14px'}}}%%
-graph TB
-    subgraph UI["🖥️ ショッピングカート画面"]
-        Header["ECサイト"]
-        Cart["🛒 カート<br/>──────────────<br/>商品A × 2<br/>¥1,000 × 2 = ¥2,000<br/><br/>商品B × 1<br/>¥2,500 × 1 = ¥2,500<br/>──────────────<br/>合計: ¥4,500"]
-    end
-
-    style UI fill:#f5f5f5,stroke:#333,stroke-width:2px
-    style Header fill:#2196f3,stroke:#1976d2,stroke-width:2px,color:#fff
-    style Cart fill:#fff,stroke:#ddd,stroke-width:1px
-```
+![](https://storage.googleapis.com/zenn-user-upload/09f37dc20938-20251219.png)
 
 **ディレクトリ構成：**
 
@@ -178,23 +126,12 @@ export const formatPrice = (price: number) => {
 ```
 
 #### フェーズ4: 注文機能追加
-![](https://storage.googleapis.com/zenn-user-upload/2037948295f1-20251219.png)
+
 注文機能の追加で「価格関連だから」という理由で無関係な計算処理が`priceUtils.ts`に混入し始めます。ファイルの責任が曖昧になってきます。
 
 **画面イメージ：**
 
-```mermaid
-%%{init: {'theme':'base', 'themeVariables': { 'fontSize':'14px'}}}%%
-graph TB
-    subgraph UI["🖥️ 注文確認画面"]
-        Header["ECサイト"]
-        Order["📋 注文確認<br/>──────────────<br/>商品合計: ¥4,500<br/>消費税(10%): ¥450<br/>送料: ¥500<br/>割引: -¥200<br/>──────────────<br/>合計: ¥5,250"]
-    end
-
-    style UI fill:#f5f5f5,stroke:#333,stroke-width:2px
-    style Header fill:#2196f3,stroke:#1976d2,stroke-width:2px,color:#fff
-    style Order fill:#fff,stroke:#ddd,stroke-width:1px
-```
+![](https://storage.googleapis.com/zenn-user-upload/2037948295f1-20251219.png)
 
 **ディレクトリ構成：**
 
@@ -229,28 +166,13 @@ export const applyDiscount = (price: number, discountRate: number) => { /* ... *
 ```
 
 #### フェーズ5: 決済・レビュー機能追加
-![](https://storage.googleapis.com/zenn-user-upload/1c3b9934c2b1-20251219.png)
-![](https://storage.googleapis.com/zenn-user-upload/88536c98f472-20251219.png)
+
 さらなる機能追加により、表面的な共通点だけで無関係な機能が一つのファイルに集まった状態です。保守性・可読性が大幅に低下しています。
 
 **画面イメージ：**
 
-```mermaid
-%%{init: {'theme':'base', 'themeVariables': { 'fontSize':'14px'}}}%%
-graph LR
-    subgraph Payment["💳 決済画面"]
-        P1["クレジットカード番号:<br/>□□□□-□□□□-□□□□-□□□□<br/><br/>分割払い設定:<br/>□ 一括 □ 3回 □ 6回<br/><br/>合計: ¥5,250"]
-    end
-
-    subgraph Review["⭐ レビュー投稿画面"]
-        R1["商品A のレビュー<br/>──────────────<br/>評価: ★★★★☆<br/><br/>コメント:<br/>┌──────────┐<br/>│ とても良い │<br/>│ 商品でした │<br/>└──────────┘"]
-    end
-
-    style Payment fill:#fff3e0,stroke:#ff9800,stroke-width:2px
-    style P1 fill:#fff,stroke:#ddd,stroke-width:1px
-    style Review fill:#e8f5e9,stroke:#4caf50,stroke-width:2px
-    style R1 fill:#fff,stroke:#ddd,stroke-width:1px
-```
+![](https://storage.googleapis.com/zenn-user-upload/1c3b9934c2b1-20251219.png)
+![](https://storage.googleapis.com/zenn-user-upload/88536c98f472-20251219.png)
 
 **ディレクトリ構成：**
 
