@@ -292,13 +292,13 @@ graph TB
     Refund --> Test
 
     style Change fill:#2196f3,stroke:#1976d2,stroke-width:2px,color:#fff
-    style File fill:#ffebee,stroke:#f44336,stroke-width:3px
-    style Product fill:#e3f2fd,stroke:#2196f3,stroke-width:2px
-    style Order fill:#ffebee,stroke:#f44336,stroke-width:2px
-    style User fill:#ffebee,stroke:#f44336,stroke-width:2px
-    style Payment fill:#ffebee,stroke:#f44336,stroke-width:2px
-    style Refund fill:#ffebee,stroke:#f44336,stroke-width:2px
-    style Test fill:#ffebee,stroke:#f44336,stroke-width:3px
+    style File fill:#ffebee,stroke:#f44336,stroke-width:3px,color:#000
+    style Product fill:#e3f2fd,stroke:#2196f3,stroke-width:2px,color:#000
+    style Order fill:#ffebee,stroke:#f44336,stroke-width:2px,color:#000
+    style User fill:#ffebee,stroke:#f44336,stroke-width:2px,color:#000
+    style Payment fill:#ffebee,stroke:#f44336,stroke-width:2px,color:#000
+    style Refund fill:#ffebee,stroke:#f44336,stroke-width:2px,color:#000
+    style Test fill:#ffebee,stroke:#f44336,stroke-width:3px,color:#000
 ```
 
 **✅ 機能的凝集の場合：影響範囲が限定的**
@@ -335,7 +335,7 @@ graph TB
 
 ### 機能的凝集への改善例
 
-論理的凝集を機能的凝集に改善するには、Feature-basedなディレクトリ構成に変更し、機能ごとに関連するファイルをまとめることが効果的です。
+論理的凝集を機能的凝集に改善するには、Feature-basedなディレクトリ構成に変更し、機能ごとに関連するファイルをまとめることが効果的です。（FSDの様な特定のアーキテクチャを推奨している訳ではなく、凝集度を意識したコロケーションが大事であるという事を伝えたいです。）
 
 ```
 src/
