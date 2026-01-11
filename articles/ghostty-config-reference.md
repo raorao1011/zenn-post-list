@@ -72,15 +72,19 @@ OpenType機能を有効化します。複数指定可能です。
 font-feature = -calt  # プログラミングリガチャを無効化
 ```
 
-### font-variation
+### font-variation / font-variation-bold / font-variation-italic / font-variation-bold-italic
 
-可変フォント（Variable Font）の軸を調整します。
+可変フォント（Variable Font）の軸を調整します。スタイル別に個別設定が可能です。
 
 - **形式**: `id=value`（例：wght=600）
 - **可能な軸**: wght、slnt、ital、opsz、wdth、GRAD等
+- **注意**: 無効な値は通常無視されます
 
 ```
 font-variation = wght=500
+font-variation-bold = wght=700
+font-variation-italic = slnt=-10
+font-variation-bold-italic = wght=700,slnt=-10
 ```
 
 ### font-codepoint-map
@@ -287,6 +291,30 @@ bold-color = bright
 薄い色（faint）テキストの透明度を指定します。
 
 - **利用可能**: 1.2.0以降
+
+### alpha-blending
+
+アルファブレンディング演算の色空間を指定します。
+
+- **可能な値**: `native`、`linear`、`linear-corrected`
+- **デフォルト**: macOS=`native`、その他=`linear-corrected`
+- **利用可能**: 1.1.0以降
+
+```
+alpha-blending = linear-corrected
+```
+
+### grapheme-width-method
+
+グラフェムクラスタのターミナルセル幅を計算するアルゴリズムを指定します。
+
+- **可能な値**: `legacy`（wcswidth互換）、`unicode`（標準）
+- **デフォルト**: `unicode`
+- **注意**: 新規ターミナルにのみ反映
+
+```
+grapheme-width-method = unicode
+```
 
 ## 背景・透明度設定
 
@@ -617,6 +645,17 @@ click-repeat-interval = 500
 right-click-action = paste
 ```
 
+### focus-follows-mouse
+
+マウスが自動的にフォーカスされたスプリットペインを選択します。
+
+- **デフォルト**: `false`
+- **範囲**: 現在のウィンドウのみ
+
+```
+focus-follows-mouse = true
+```
+
 ## クリップボード設定
 
 ### clipboard-read / clipboard-write
@@ -735,6 +774,30 @@ abnormal-command-exit-runtime = 1000
 
 ```
 scrollback-limit = 10485760  # 10MB
+```
+
+### working-directory
+
+新規コマンド実行時の初期ディレクトリを指定します。
+
+- **可能な値**: 絶対パス、`home`、`inherit`
+- **デフォルト**: `inherit`（macOS launchd/デスクトップ起動時は`home`）
+- **注意**: `window-inherit-working-directory`が設定されている場合は上書きされます
+
+```
+working-directory = ~/projects
+working-directory = inherit
+```
+
+### enquiry-response
+
+ENQ（0x05）制御文字を受信したときに送信する文字列を指定します。
+
+- **デフォルト**: 空文字列
+- **用途**: 実行中のコマンドからの機器問い合わせへの応答
+
+```
+enquiry-response = "Ghostty"
 ```
 
 ## リンク・通知設定
@@ -1000,6 +1063,52 @@ macos-secure-input-indication = true
 macos-icon = blueprint
 ```
 
+### macos-custom-icon
+
+カスタムアプリケーションアイコンファイルの絶対パスを指定します。
+
+- **対応形式**: PNG、JPEG、ICNS
+- **デフォルト**: `~/.config/ghostty/Ghostty.icns`
+- **要件**: `macos-icon=custom`時に必須
+
+```
+macos-custom-icon = ~/.config/ghostty/my-icon.png
+```
+
+### macos-icon-frame
+
+macOSアプリアイコンフレームのマテリアル仕上げを指定します。
+
+- **可能な値**: `aluminum`、`beige`、`plastic`、`chrome`
+- **デフォルト**: `aluminum`
+- **要件**: `macos-icon=custom-style`時に必須
+
+```
+macos-icon-frame = chrome
+```
+
+### macos-icon-ghost-color
+
+macOSアプリアイコンのゴースト文字色をカスタマイズします。
+
+- **形式**: 16進数（#RRGGBB）または名前付きX11色
+- **要件**: `macos-icon=custom-style`時に必須
+
+```
+macos-icon-ghost-color = #00ff00
+```
+
+### macos-icon-screen-color
+
+macOSアプリアイコンのスクリーン要素のグラデーション色を指定します（下から上）。
+
+- **形式**: 最大64色をコンマ区切り（16進数またはX11色名）
+- **要件**: `macos-icon=custom-style`時に必須
+
+```
+macos-icon-screen-color = #1e1e1e,#3e3e3e,#5e5e5e
+```
+
 ### macos-shortcuts
 
 Shortcuts.appの制御を許可するかを指定します。
@@ -1031,6 +1140,17 @@ linux-cgroup = single-instance
 ```
 linux-cgroup-memory-limit = 1G
 linux-cgroup-processes-limit = 256
+```
+
+### linux-cgroup-hard-fail
+
+cgroup初期化失敗時にGhosttyの起動を中止するかを指定します。
+
+- **可能な値**: `true`（ハードフェイル）、`false`（失敗を無視）
+- **限定**: Linux、systemdが必要
+
+```
+linux-cgroup-hard-fail = false
 ```
 
 ### gtk-single-instance
@@ -1110,6 +1230,52 @@ TERM環境変数の値を指定します。
 
 ```
 term = xterm-256color
+```
+
+### class
+
+アプリケーションクラス識別子を指定します。
+
+- **デフォルト**: `com.mitchellh.ghostty`
+- **影響範囲**: WM_CLASS属性（X11）、Wayland app ID、DBus接続
+- **限定**: GTKビルドのみ
+
+```
+class = com.example.myghostty
+```
+
+### x11-instance-name
+
+WM_CLASS X11ウィンドウプロパティのインスタンス名コンポーネントを指定します。
+
+- **デフォルト**: `ghostty`
+- **限定**: X11のみ、GTKビルド専用
+
+```
+x11-instance-name = my-ghostty
+```
+
+### freetype-load-flags
+
+FreeTypeレンダリングフラグを指定してヒンティングとアンチエイリアスの動作を制御します。
+
+- **可能な値**: `hinting`、`force-autohint`、`monochrome`、`autohint`
+- **限定**: FreeTypeを使用するLinuxビルド（macOS CoreTextは対象外）
+
+```
+freetype-load-flags = hinting,autohint
+```
+
+### command-palette-entry
+
+カスタムコマンドパレットエントリを作成します。
+
+- **形式**: `title:名前, action:アクション名, description:説明文（オプション）`
+- **デフォルト**: 一般的なアクションがプリロード済み、空値で全クリア可能
+- **利用可能**: 1.2.0以降
+
+```
+command-palette-entry = title:My Action, action:new_window, description:Open a new window
 ```
 
 ### osc-color-report-format
