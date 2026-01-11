@@ -48,7 +48,9 @@ font-size = 14
 
 フォントスタイルを指定します。スタイル無効化も可能です。
 
-- **可能な値**: フォント固有のスタイル名、または `false`
+- **可能な値**:
+  - フォント固有のスタイル名 - インストールされているフォントによって異なる
+  - `false` - 指定スタイルを無効化（通常フォントにフォールバック）
 - **デフォルト**: 自動検出
 
 ```
@@ -59,7 +61,12 @@ font-style = false
 
 提供されないスタイルの自動合成を制御します。
 
-- **可能な値**: `true`、`false`、`no-bold`、`no-italic`、`no-bold-italic`
+- **可能な値**:
+  - `true` - スタイルの合成を有効化
+  - `false` - スタイルの合成を無効化
+  - `no-bold` - 太字の合成を無効化
+  - `no-italic` - イタリックの合成を無効化
+  - `no-bold-italic` - 太字イタリックの合成を無効化
 - **デフォルト**: `true`
 
 ### font-feature
@@ -113,7 +120,8 @@ font-thicken-strength = 50
 
 フォント成形の分割を制御します。
 
-- **可能な値**: `cursor`
+- **可能な値**:
+  - `cursor` - カーソル下のテキスト形成を分割
 
 ## フォント調整設定
 
@@ -227,7 +235,11 @@ cursor-text = #ffffff
 
 カーソルのスタイルを指定します。
 
-- **可能な値**: `block`、`bar`、`underline`、`block_hollow`
+- **可能な値**:
+  - `block` - セル全体を塗りつぶす矩形カーソル
+  - `bar` - 垂直線のバー型カーソル
+  - `underline` - 文字の下に表示される水平線カーソル
+  - `block_hollow` - 塗りつぶしのない矩形枠カーソル
 - **デフォルト**: システム依存
 
 ```
@@ -238,7 +250,10 @@ cursor-style = bar
 
 カーソルの点滅を制御します。
 
-- **可能な値**: `true`、`false`、空（AT&Tモード対応）
+- **可能な値**:
+  - 空（未設定） - デフォルトで点滅
+  - `true` - 点滅を有効化
+  - `false` - 点滅を無効化
 - **デフォルト**: `true`
 
 ```
@@ -277,7 +292,9 @@ minimum-contrast = 1.1
 
 太字テキストの色を制御します。
 
-- **可能な値**: 色コード、または `bright`
+- **可能な値**:
+  - 16進数カラーコード（例：`#RRGGBB`） - 太字テキストの固定色
+  - `bright` - 明るい色パレットを太字に使用
 
 ```
 bold-color = bright
@@ -292,7 +309,10 @@ bold-color = bright
 
 アルファブレンディング演算の色空間を指定します。
 
-- **可能な値**: `native`、`linear`、`linear-corrected`
+- **可能な値**:
+  - `native` - OSネイティブの色空間でブレンディング
+  - `linear` - リニア空間でブレンディング
+  - `linear-corrected` - テキスト補正付きリニアブレンディング
 - **デフォルト**: macOS=`native`、その他=`linear-corrected`
 
 ```
@@ -303,7 +323,9 @@ alpha-blending = linear-corrected
 
 グラフェムクラスタのターミナルセル幅を計算するアルゴリズムを指定します。
 
-- **可能な値**: `legacy`（wcswidth互換）、`unicode`（標準）
+- **可能な値**:
+  - `unicode` - Unicode標準の幅計算
+  - `legacy` - wcswid thのようなレガシーメソッド
 - **デフォルト**: `unicode`
 - **注意**: 新規ターミナルにのみ反映
 
@@ -352,7 +374,10 @@ background-image-repeat = false
 
 背景のぼかしを設定します（opacity < 1時）。
 
-- **可能な値**: `false`、`true`、0～255のぼかし強度
+- **可能な値**:
+  - `false` または `0` - ぼかしを無効化
+  - `true` または `20` - デフォルト強度でぼかしを有効化
+  - 0～255の整数 - カスタムぼかし強度を指定
 - **対応**: macOS、KDE Plasma（強度は無視されます）
 
 ```
@@ -428,7 +453,10 @@ window-padding-x = 5,15
 
 パディング領域の色を指定します。
 
-- **可能な値**: `background`、`extend`、`extend-always`
+- **可能な値**:
+  - `background` - 設定済みの背景色を使用
+  - `extend` - 最寄りのグリッドセルの背景色を拡張
+  - `extend-always` - ヒューリスティック適用なしで背景色を拡張
 
 ```
 window-padding-color = extend
@@ -438,7 +466,11 @@ window-padding-color = extend
 
 ウィンドウ装飾を制御します。
 
-- **可能な値**: `none`、`auto`、`client`、`server`
+- **可能な値**:
+  - `none` - すべての装飾を無効化
+  - `auto` - クライアント側またはサーバー側の装飾を自動選択
+  - `client` - クライアント側の装飾を優先
+  - `server` - サーバー側の装飾を優先
 - **デフォルト**: `auto`
 - **互換**: `true`=`auto`、`false`=`none`
 
@@ -455,7 +487,9 @@ window-decoration = none
 
 ウィンドウのサブタイトルを制御します。
 
-- **可能な値**: `false`、`working-directory`
+- **可能な値**:
+  - `false` - サブタイトルを非表示
+  - `working-directory` - サーフェスの作業ディレクトリを表示
 
 ```
 window-subtitle = working-directory
@@ -465,7 +499,12 @@ window-subtitle = working-directory
 
 ウィンドウのテーマを指定します。
 
-- **可能な値**: `auto`、`system`、`light`、`dark`、`ghostty`
+- **可能な値**:
+  - `auto` - ターミナル背景色に基づいてテーマを決定
+  - `system` - OSのシステムテーマを使用
+  - `light` - システム設定に関係なくライトテーマを使用
+  - `dark` - システム設定に関係なくダークテーマを使用
+  - `ghostty` - 設定された前景色/背景色を使用（Linuxのみ）
 - **注意**: macOS `titlebar=tabs`で自動変更されます
 
 ```
@@ -476,7 +515,9 @@ window-theme = dark
 
 色空間を指定します。
 
-- **可能な値**: `srgb`、`display-p3`
+- **可能な値**:
+  - `srgb` - 標準RGB色空間
+  - `display-p3` - Display P3色空間（広色域）
 - **デフォルト**: `srgb`
 - **限定**: macOSのみ
 
@@ -506,7 +547,10 @@ window-inherit-font-size = true
 
 ウィンドウの状態を保存するかを指定します。
 
-- **可能な値**: `default`、`never`、`always`
+- **可能な値**:
+  - `default` - OS推奨の動作に従う
+  - `never` - ウィンドウ状態を保存しない
+  - `always` - 終了時に必ずウィンドウ状態を保存
 - **デフォルト**: `default`
 - **限定**: macOSのみ
 
@@ -520,7 +564,9 @@ window-inherit-font-size = true
 
 新しいタブの位置を指定します。
 
-- **可能な値**: `current`、`end`
+- **可能な値**:
+  - `current` - 現在のタブの後に新規タブを挿入
+  - `end` - リストの最後に新規タブを挿入
 - **デフォルト**: `current`
 
 ```
@@ -531,7 +577,10 @@ window-new-tab-position = end
 
 タブバーの表示を制御します。
 
-- **可能な値**: `always`、`auto`、`never`
+- **可能な値**:
+  - `always` - タブが1つでもタブバーを表示
+  - `auto` - 複数タブ時のみ表示
+  - `never` - タブバーを非表示（キーバインドでアクセス）
 - **デフォルト**: `auto`
 - **限定**: GTK（Linux）のみ
 
@@ -578,7 +627,11 @@ mouse-hide-while-typing = true
 
 Shift+マウスクリック検出のプロトコル送信を制御します。
 
-- **可能な値**: `true`、`false`、`always`、`never`
+- **可能な値**:
+  - `true` - Shiftキーをマウスプロトコルで送信
+  - `false` - Shiftキーを送信しない（選択を拡張）
+  - `always` - Shiftキーを送信（プログラム側の変更不可）
+  - `never` - Shiftキーを送信しない（プログラム側の変更不可）
 
 ### mouse-scroll-multiplier
 
@@ -595,9 +648,10 @@ mouse-scroll-multiplier = 5
 
 スクロールを下部に戻すタイミングを指定します。
 
-- **可能な値**: `keystroke`、`output`（コンマ区切り）
+- **可能な値**（コンマ区切りで複数指定可能）:
+  - `keystroke` - キー入力時にスクロール
+  - `output` - 新データ出力時のスクロール（未実装）
 - **デフォルト**: `keystroke`、no-output
-- **output**: 未実装
 
 ```
 scroll-to-bottom = keystroke
@@ -627,7 +681,12 @@ click-repeat-interval = 500
 
 右クリック時のアクションを指定します。
 
-- **可能な値**: `context-menu`、`paste`、`copy`、`copy-or-paste`、`ignore`
+- **可能な値**:
+  - `context-menu` - コンテキストメニューを表示
+  - `paste` - クリップボードの内容を貼り付け
+  - `copy` - 選択テキストをコピー
+  - `copy-or-paste` - 選択時はコピー、未選択時は貼り付け
+  - `ignore` - 何もしない
 - **デフォルト**: `context-menu`
 
 ```
@@ -651,7 +710,10 @@ focus-follows-mouse = true
 
 OSC 52経由のクリップボード操作を許可するかを指定します。
 
-- **可能な値**: `ask`、`allow`、`deny`
+- **可能な値**:
+  - `ask` - ユーザーに許可を求める
+  - `allow` - プロンプトなしで許可
+  - `deny` - 許可しない
 - **デフォルト**: `ask`（読）、`allow`（書）
 
 ```
@@ -687,7 +749,10 @@ clipboard-paste-protection = true
 
 選択時に自動コピーするかを指定します。
 
-- **可能な値**: `true`、`false`、`clipboard`
+- **可能な値**:
+  - `true` - 選択クリップボードにコピー
+  - `clipboard` - 選択クリップボードとシステムクリップボードの両方にコピー
+  - `false` - 自動コピーしない
 - **true**: 選択クリップボード優先
 - **clipboard**: 両方にコピー
 
@@ -768,7 +833,10 @@ scrollback-limit = 10485760  # 10MB
 
 新規コマンド実行時の初期ディレクトリを指定します。
 
-- **可能な値**: 絶対パス、`home`、`inherit`
+- **可能な値**:
+  - `home` - ユーザーのホームディレクトリ
+  - `inherit` - 起動プロセスの作業ディレクトリを継承
+  - 絶対パス - 指定したディレクトリパス
 - **デフォルト**: `inherit`（macOS launchd/デスクトップ起動時は`home`）
 - **注意**: `window-inherit-working-directory`が設定されている場合は上書きされます
 
@@ -876,7 +944,13 @@ keybind = global:ctrl+grave_accent=toggle_quick_terminal
 
 シェル統合機能を制御します。
 
-- **可能な値**: `none`、`detect`、`bash`、`elvish`、`fish`、`zsh`
+- **可能な値**:
+  - `none` - 自動注入を行わない
+  - `detect` - ファイル名からシェルを自動検出
+  - `bash` - Bash用のシェル統合を使用
+  - `elvish` - Elvish用のシェル統合を使用
+  - `fish` - Fish用のシェル統合を使用
+  - `zsh` - Zsh用のシェル統合を使用
 - **デフォルト**: `detect`
 - **機能**: ディレクトリ報告、プロンプト表示、確認スキップ等
 
@@ -888,9 +962,13 @@ shell-integration = zsh
 
 シェル統合の個別機能を制御します。
 
-- **可能な値**: `cursor`、`sudo`、`title`、`ssh-env`、`ssh-terminfo`
+- **可能な値**（コンマ区切りで複数指定可能）:
+  - `cursor` - プロンプトでブリンクバーカーソルに設定
+  - `sudo` - sudoラッパーがterminfo保存
+  - `title` - シェル統合でウィンドウタイトル設定
+  - `ssh-env` - SSH接続時の環境変数処理（1.2.0以降）
+  - `ssh-terminfo` - SSH接続時のterminfo自動インストール（1.2.0以降）
 - **デフォルト**: 全有効
-- **ssh系**: 1.2.0以降、terminfo自動インストール機能
 
 ```
 shell-integration-features = cursor,sudo,title
@@ -903,7 +981,10 @@ shell-integration-features = cursor,sudo,title
 GLSLカスタムシェーダを指定します。
 
 - **形式**: ファイルパス（複数指定可）
-- **animation**: `true`（デフォルト）/`false`/`always`
+- **animation の可能な値**:
+  - `true` - フォーカス時にアニメーション実行（デフォルト）
+  - `false` - ターミナル更新時のみレンダリング
+  - `always` - フォーカス状態に関係なくアニメーション実行
 - **注意**: シェーダコンパイルエラーは起動時ログに表示されます
 
 ```
@@ -915,9 +996,14 @@ custom-shader-animation = true
 
 ベル機能を制御します。
 
-- **可能な値**: `system`、`audio`、`attention`、`title`、`border`
+- **可能な値**（コンマ区切りで複数指定可能）:
+  - `system` - システム組み込み通知を使用
+  - `audio` - カスタム音声ファイル再生
+  - `attention` - フォーカス喪失時にユーザー注意要求
+  - `title` - アラートタイトルに絵文字追加
+  - `border` - アラートサーフェスに枠線表示
 - **デフォルト**: `attention`=有効、`title`=有効
-- **形式**: コンマ区切り、`no-○○`で無効化
+- **形式**: `no-○○`で無効化
 
 ```
 bell-features = audio,attention,no-border
@@ -939,7 +1025,11 @@ bell-audio-volume = 0.3
 
 アプリケーション通知を制御します。
 
-- **可能な値**: `clipboard-copy`、`config-reload`
+- **可能な値**（コンマ区切りで複数指定可能）:
+  - `clipboard-copy` - テキストコピー時に通知表示
+  - `config-reload` - 設定リロード時に通知表示
+  - `true` - 全通知を有効化
+  - `false` - 全通知を無効化
 - **デフォルト**: 両方 `true`
 - **限定**: GTKのみ
 
@@ -953,7 +1043,11 @@ app-notifications = clipboard-copy,config-reload
 
 ネイティブ以外の全画面モードを制御します。
 
-- **可能な値**: `true`、`false`、`visible-menu`、`padded-notch`
+- **可能な値**:
+  - `true` - 非ネイティブモード（メニューバー非表示）
+  - `false` - macOS標準フルスクリーン
+  - `visible-menu` - 非ネイティブモード（メニューバー表示）
+  - `padded-notch` - ノッチ考慮した非ネイティブモード
 
 ```
 macos-non-native-fullscreen = visible-menu
@@ -963,7 +1057,9 @@ macos-non-native-fullscreen = visible-menu
 
 ウィンドウボタンの表示を制御します。
 
-- **可能な値**: `visible`、`hidden`
+- **可能な値**:
+  - `visible` - ウィンドウボタン表示
+  - `hidden` - ウィンドウボタン非表示
 - **デフォルト**: `visible`
 
 ```
@@ -974,7 +1070,11 @@ macos-window-buttons = hidden
 
 タイトルバーのスタイルを指定します。
 
-- **可能な値**: `native`、`transparent`、`tabs`、`hidden`
+- **可能な値**:
+  - `native` - 標準のmacOSタイトルバー
+  - `transparent` - 透明な背景のネイティブタイトルバー
+  - `tabs` - タブ統合型のカスタムタイトルバー
+  - `hidden` - タイトルバーを完全に非表示
 - **デフォルト**: `transparent`
 
 ```
@@ -1001,7 +1101,9 @@ macos-option-as-alt = true
 
 Dockへのドロップ動作を指定します。
 
-- **可能な値**: `new-tab`、`new-window`
+- **可能な値**:
+  - `new-tab` - 現在のウィンドウに新規タブ作成
+  - `new-window` - 新規ウィンドウを必ず作成
 - **デフォルト**: `new-tab`
 
 ```
@@ -1022,7 +1124,9 @@ macos-window-shadow = false
 
 ドック・アプリ切替画面から非表示にするかを指定します。
 
-- **可能な値**: `never`、`always`
+- **可能な値**:
+  - `never` - Dockに常に表示
+  - `always` - Dockから常に非表示
 
 ```
 macos-hidden = always
@@ -1041,9 +1145,11 @@ macos-secure-input-indication = true
 
 アプリケーションアイコンを指定します。
 
-- **可能な値**: `official`、`blueprint`、`chalkboard`等、`custom`、`custom-style`
-- **custom要件**: `macos-custom-icon`でパス指定
-- **custom-style要件**: フレーム・色設定必須
+- **可能な値**:
+  - `official` - 公式アイコン
+  - `blueprint` / `chalkboard` / `microchip` / `glass` / `holographic` / `paper` / `retro` / `xray` - 公式バリアント
+  - `custom` - カスタムアイコンファイル（`macos-custom-icon`でパス指定）
+  - `custom-style` - カスタムスタイルの公式アイコン（フレーム・色設定必須）
 
 ```
 macos-icon = blueprint
@@ -1065,7 +1171,11 @@ macos-custom-icon = ~/.config/ghostty/my-icon.png
 
 macOSアプリアイコンフレームのマテリアル仕上げを指定します。
 
-- **可能な値**: `aluminum`、`beige`、`plastic`、`chrome`
+- **可能な値**:
+  - `aluminum` - ブラッシュド・アルミニウムフレーム
+  - `beige` - 90年代風ベージュフレーム
+  - `plastic` - 光沢黒プラスチックフレーム
+  - `chrome` - 光沢クロムフレーム
 - **デフォルト**: `aluminum`
 - **要件**: `macos-icon=custom-style`時に必須
 
@@ -1099,7 +1209,10 @@ macos-icon-screen-color = #1e1e1e,#3e3e3e,#5e5e5e
 
 Shortcuts.appの制御を許可するかを指定します。
 
-- **可能な値**: `ask`、`allow`、`deny`
+- **可能な値**:
+  - `ask` - ユーザーに許可を確認
+  - `allow` - 確認なしで許可
+  - `deny` - Shortcutsの制御を拒否
 
 ```
 macos-shortcuts = ask
@@ -1111,7 +1224,10 @@ macos-shortcuts = ask
 
 リソース隔離制御を指定します。
 
-- **可能な値**: `never`、`always`、`single-instance`
+- **可能な値**:
+  - `never` - cgroupを使用しない
+  - `always` - 常にcgroupを使用
+  - `single-instance` - シングルインスタンス時のみ使用
 - **要件**: systemd
 
 ```
@@ -1131,7 +1247,9 @@ linux-cgroup-processes-limit = 256
 
 cgroup初期化失敗時にGhosttyの起動を中止するかを指定します。
 
-- **可能な値**: `true`（ハードフェイル）、`false`（失敗を無視）
+- **可能な値**:
+  - `true` - cgroup初期化失敗時にGhosttyを終了
+  - `false` - cgroup初期化失敗を許容
 - **限定**: Linux、systemdが必要
 
 ```
@@ -1142,7 +1260,10 @@ linux-cgroup-hard-fail = false
 
 単一インスタンスモードを制御します。
 
-- **可能な値**: `true`、`false`、`detect`
+- **可能な値**:
+  - `true` - シングルインスタンスモード
+  - `false` - 独立したアプリケーション起動
+  - `detect` - 環境に基づいて自動判定
 - **デフォルト**: `detect`
 - **注意**: 1.2.0で`desktop`廃止、`detect`に統一
 
@@ -1154,7 +1275,10 @@ gtk-single-instance = true
 
 GTKタイトルバーとタブ位置を制御します。
 
-- **tabs-location**: `top`、`bottom`、`hidden`
+- **tabs-location の可能な値**:
+  - `top` - タブバーを上部に表示
+  - `bottom` - タブバーを下部に表示
+  - `hidden` - タブバーを非表示
 
 ```
 gtk-titlebar = true
@@ -1244,7 +1368,11 @@ x11-instance-name = my-ghostty
 
 FreeTypeレンダリングフラグを指定してヒンティングとアンチエイリアスの動作を制御します。
 
-- **可能な値**: `hinting`、`force-autohint`、`monochrome`、`autohint`
+- **可能な値**（コンマ区切りで複数指定可能）:
+  - `hinting` - ヒンティング有効化（デフォルト有効）
+  - `force-autohint` - 自動ヒンターを常に使用
+  - `monochrome` - 1ビット単色描画
+  - `autohint` - 自動ヒンター有効化
 - **限定**: FreeTypeを使用するLinuxビルド（macOS CoreTextは対象外）
 
 ```
@@ -1266,7 +1394,10 @@ command-palette-entry = title:My Action, action:new_window, description:Open a n
 
 OSC色レポートの形式を指定します。
 
-- **可能な値**: `none`、`8-bit`、`16-bit`
+- **可能な値**:
+  - `none` - OSC 4/10/11クエリへの応答なし
+  - `8-bit` - スケール未調整のRGB値を返す（例：rr/gg/bb）
+  - `16-bit` - スケール調整済みのRGB値を返す（例：rrrr/gggg/bbbb）
 - **デフォルト**: `16-bit`
 
 ```
@@ -1287,7 +1418,10 @@ vt-kam-allowed = false
 
 非同期バックエンドを指定します。
 
-- **可能な値**: `auto`、`epoll`、`io_uring`
+- **可能な値**:
+  - `auto` - プラットフォームの最適なバックエンドを自動選択
+  - `epoll` - epoll APIを使用
+  - `io_uring` - io_uring APIを使用
 - **デフォルト**: `auto`
 - **限定**: Linuxのみ
 
@@ -1299,7 +1433,10 @@ async-backend = io_uring
 
 自動更新とチャネルを指定します。
 
-- **可能値**: `off`、`check`、`download`
+- **auto-update の可能な値**:
+  - `off` - 自動更新を無効化
+  - `check` - 更新をチェックして通知のみ
+  - `download` - 更新をチェック・ダウンロードして通知
 - **チャネル**: `stable`、`tip`
 - **限定**: macOSのみ
 
@@ -1373,7 +1510,12 @@ undo-timeout = 10s
 
 Quick Terminalの位置とサイズを指定します。
 
-- **position**: `top`、`bottom`、`left`、`right`、`center`
+- **position の可能な値**:
+  - `top` - 画面上部に表示
+  - `bottom` - 画面下部に表示
+  - `left` - 画面左側に表示
+  - `right` - 画面右側に表示
+  - `center` - 画面中央に表示
 - **size**: パーセンテージ（%）またはピクセル（px）
 
 ```
@@ -1385,7 +1527,10 @@ quick-terminal-size = 50%
 
 表示スクリーンを指定します。
 
-- **可能な値**: `main`、`mouse`、`macos-menu-bar`
+- **可能な値**:
+  - `main` - OSが推奨する主画面
+  - `mouse` - マウスがある画面
+  - `macos-menu-bar` - macOSメニューバーのある画面
 - **限定**: macOS
 
 ```
