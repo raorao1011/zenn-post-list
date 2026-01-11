@@ -3,7 +3,7 @@ title: "Ghostty設定リファレンス"
 emoji: "👻"
 type: "tech"
 topics: ["ghostty", "terminal", "設定", "ターミナルエミュレータ"]
-published: false
+published: true
 ---
 
 ## はじめに
