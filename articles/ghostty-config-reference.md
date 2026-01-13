@@ -8,11 +8,11 @@ published: true
 
 ## はじめに
 
-本記事は、ターミナルエミュレータGhosttyの公式設定ドキュメント（v1.2.3時点）を参考に、設定オプションについて日本語で解説したものです。
+本記事は、ターミナルエミュレータGhosttyの公式設定ドキュメント（v1.2.3時点）を参考に、設定オプションについて解説したものです。
 
 https://ghostty.org/
 
-**注意:** 最新かつ正確な情報が必要な場合は[公式ドキュメント](https://ghostty.org/docs/config/reference)をご確認ください。
+詳細な情報は[公式ドキュメント](https://ghostty.org/docs/config/reference)をご確認ください。
 
 設定ファイルは通常 `~/.config/ghostty/config` に配置します。
 
